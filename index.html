@@ -198,11 +198,21 @@ a{-webkit-tap-highlight-color:transparent;}
 .card:hover .thumb img{transform:scale(1.08);}
 .thumb svg{width:38%;height:38%;opacity:.55;stroke:var(--dorado);}
 .badge-sale{position:absolute;top:10px;left:10px;z-index:2;background:var(--dorado);color:var(--negro);font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:100px;box-shadow:0 2px 10px rgba(0,0,0,.4);}
+.combo-collage{display:grid;width:100%;height:100%;gap:2px;}
+.combo-collage img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s ease;}
+.card:hover .combo-collage img{transform:scale(1.08);}
+.collage-2{grid-template-columns:1fr 1fr;}
+.collage-3{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;}
+.collage-3 > *:first-child{grid-row:1 / 3;}
+.collage-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;background:linear-gradient(135deg, rgba(198,168,124,.15), var(--malva-profundo));color:var(--dorado);font-size:.62rem;letter-spacing:.02em;line-height:1.25;}
 
 .card-body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:8px;flex:1;}
 .card-name{font-family:'Cormorant Garamond', serif;font-weight:600;font-size:1.12rem;line-height:1.28;color:var(--crema);}
 .card-sku{font-size:.66rem;letter-spacing:.08em;color:var(--malva);text-transform:uppercase;}
 .card-meta{font-size:.72rem;color:rgba(237,227,221,.55);}
+.combo-hook{font-size:.74rem;font-style:italic;color:var(--malva);line-height:1.35;}
+.combo-includes{list-style:none;font-size:.7rem;color:rgba(237,227,221,.65);line-height:1.55;}
+.combo-includes li::before{content:"• ";color:var(--dorado);}
 .card-footer{margin-top:auto;padding-top:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid rgba(198,168,124,.14);}
 .price{font-family:'Cormorant Garamond', serif;font-size:1.2rem;color:var(--dorado);font-weight:600;}
 .price small{display:block;font-family:'Jost', sans-serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(198,168,124,.6);font-weight:400;}
@@ -475,6 +485,67 @@ const waIcon = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32
 const cartIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
 
 const products = [
+  // Combos
+  {cat:"Combos", name:"Kit Primerizos", sku:"COMBO-01", price:63900, oldPrice:71000, hook:"Entrada de gama: primera compra o clientes tímidos.", items:[
+    {name:"Gel Lubricante Íntimo Natural Elixir – 50 ML", link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Caja-y-producto--768x768.jpg"},
+    {name:"O-Bullet Bala Vibradora Recargable Camtoyz", link:"https://distrisexcolombia.com/wp-content/uploads/2026/04/ChatGPT-Image-6-may-2026-17_25_29-300x300.png"},
+    {name:"Preservativos +Sex 60 unidades"}
+  ]},
+  {cat:"Combos", name:"Trío de Sabores", sku:"COMBO-02", price:58700, oldPrice:69000, hook:"Rota los saborizados de baja rotación (3 x 30 ml).", items:[
+    {name:"Lubricante Saborizado Fresa Bombón Elixir", link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-FRE-30ML_4-1200x1200.jpg"},
+    {name:"Lubricante Saborizado Sandía Elixir – 30ML", link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/EX-CLV-005-SAN-30ML_4-1200x1200-1.jpg"},
+    {name:"Lubricante Saborizado Chicle Elixir", link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/4_43427032-7871-459c-9fee-ab97fdbee544-1200x1200.jpg"}
+  ]},
+  {cat:"Combos", name:"Iniciación Anal", sku:"COMBO-03", price:75200, oldPrice:83500, hook:"Cross-sell natural: plug + lubricante anal.", items:[
+    {name:"Elixir Anesty Lubricante Íntimo Anal Desensibilizante – 30ML", link:"https://distrisexcolombia.com/wp-content/uploads/2026/01/Mockups-anesty-30ml-2.jpeg"},
+    {name:"Plug Anal Rómulo Camtoyz – Talla S", link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado4-1-300x300.jpg"},
+    {name:"Gel Lubricante Íntimo Natural Elixir – 50 ML", link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Caja-y-producto--768x768.jpg"}
+  ]},
+  {cat:"Combos", name:"Wand Deluxe", sku:"COMBO-04", price:125800, oldPrice:143000, hook:"Ticket alto: vibrador + insumos de uso.", items:[
+    {name:"Vibrador Hitachi Lunara Camtoyz – Lila", link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/1-30-300x300.jpg"},
+    {name:"Lubricante Íntimo Piel Sensible Elixir – 100 ml", link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Piel-Sensible-2.jpg"},
+    {name:"Frequency Vibrador Líquido – 15ML", link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Frequency-02-1200x1200.jpg"}
+  ]},
+  {cat:"Combos", name:"Solo para Él", sku:"COMBO-05", price:118800, oldPrice:135000, hook:"Público masculino: masturbadora + retardante.", items:[
+    {name:"Masturbadora Realista Jolie Camtoyz", link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Jolie-01-300x300.jpg"},
+    {name:"Lubricante Blanco Cremoso Eyaculación Masculina – 250 ml", link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Cum-1-1.jpg"},
+    {name:"Retardante Rhino Forte Spray", link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Crema-Masajes-01-300x300.jpg"}
+  ]},
+  {cat:"Combos", name:"Noche Caliente", sku:"COMBO-06", price:49300, oldPrice:56000, hook:"Parejas, bajo precio de entrada, alta rotación.", items:[
+    {name:"Aceite Caliente para Masajes Delicius – Dados Sabores Surtidos", link:"https://distrisexcolombia.com/wp-content/uploads/2023/10/Lubricante-intimo-Caliente-Delicius-Con-Dados-frutos-rojo-Manzanas_balisexstore-2.jpg"},
+    {name:"Lubricante Íntimo Caliente Erotika", link:"https://distrisexcolombia.com/wp-content/uploads/2023/10/lubricante-intimo-caliente-erotika-bali-sex-store-bali-sex-store.jpg"},
+    {name:"Multiorgasmos Fraud Og", link:"https://distrisexcolombia.com/wp-content/uploads/2025/10/Woman-00-1-300x300.jpg"}
+  ]},
+  {cat:"Combos", name:"Bondage Iniciación", sku:"COMBO-07", price:125800, oldPrice:143000, hook:"Mueve el Kit Capri con sus accesorios.", items:[
+    {name:"Kit Bondage Capri – Negro", link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Kit-bondage-capri-camtoyz-DistriSex-300x300.jpg"},
+    {name:"Boundy Amarre para Muñecas y Tobillos Camtoyz", link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/3-29-300x300.jpg"},
+    {name:"Lubricante Íntimo Híbrido Elixir – 30 ml", link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Hubrido-Mockup_Mesa-de-trabajo-1-copia.jpg"}
+  ]},
+  {cat:"Combos", name:"Noche de Lencería", sku:"COMBO-08", price:111600, oldPrice:124000, hook:"Sube el ticket de lencería con dulce + lubricante.", items:[
+    {name:"Set Bad Girl", link:"https://i.ibb.co/GfD1v0jy/Whats-App-Image-2026-08-17-at-11-36-34-PM-2.jpg"},
+    {name:"Frequency Vibrador Líquido – 15ML", link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Frequency-02-1200x1200.jpg"},
+    {name:"Gel Lubricante Íntimo Natural Elixir – 50 ML", link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Caja-y-producto--768x768.jpg"}
+  ]},
+  {cat:"Combos", name:"Realismo Total", sku:"COMBO-09", price:130500, oldPrice:145000, hook:"Dildo premium + lubricante de larga duración.", items:[
+    {name:"Dildo Ultra Realista Dager 17cm Camtoyz", link:"https://distrisexcolombia.com/wp-content/uploads/2024/01/Dildo-Ultrarealista-Dager6-300x300.jpg"},
+    {name:"Lubricante Íntimo Piel Sensible Elixir – 100 ml", link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Piel-Sensible-2.jpg"}
+  ]},
+  {cat:"Combos", name:"Vidrio & Sensaciones", sku:"COMBO-10", price:101600, oldPrice:115500, hook:"Juego frío/calor + vibrador líquido.", items:[
+    {name:"Dildo de Vidrio Amara 17cm Camtoyz", link:"https://distrisexcolombia.com/wp-content/uploads/2023/12/Amara5-300x300.jpg"},
+    {name:"Frequency Vibrador Líquido – 15ML", link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Frequency-02-1200x1200.jpg"},
+    {name:"Gel Lubricante Íntimo Natural Elixir – 50 ML", link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Caja-y-producto--768x768.jpg"}
+  ]},
+  {cat:"Combos", name:"Doble Placer Parejas", sku:"COMBO-11", price:137300, oldPrice:156000, hook:"El ticket más alto del catálogo, pensado en pareja.", items:[
+    {name:"Double Wand Vibrador Doble Camtoyz", link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/6-13-300x300.jpg"},
+    {name:"Lubricante Saborizado Crema de Whisky Elixir", link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-WHI-30ML_4-1200x1200.jpg"},
+    {name:"Preservativos +Sex 60 unidades"}
+  ]},
+  {cat:"Combos", name:"Regalo Sorpresa", sku:"COMBO-12", price:91800, oldPrice:102000, hook:"Cumpleaños o aniversario, listo para obsequiar.", items:[
+    {name:"Set Diva", link:"https://i.ibb.co/Mkqw4StQ/Whats-App-Image-2026-08-17-at-11-36-29-PM-3.jpg"},
+    {name:"Lubricante Saborizado Fresa Bombón Elixir", link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-FRE-30ML_4-1200x1200.jpg"},
+    {name:"Aceite Caliente para Masajes Delicius – Dados Sabores Surtidos", link:"https://distrisexcolombia.com/wp-content/uploads/2023/10/Lubricante-intimo-Caliente-Delicius-Con-Dados-frutos-rojo-Manzanas_balisexstore-2.jpg"}
+  ]},
+
   // Lubricantes Íntimos
   {cat:"Lubricantes Íntimos", name:"Gel Lubricante Íntimo Natural Elixir – 50 ML", sku:"EX-CLV-6008-NAT-50ML", size:"50 ML", price:21000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Caja-y-producto--768x768.jpg"},
   {cat:"Lubricantes Íntimos", name:"Lubricante Íntimo Híbrido Elixir – 30 ml", sku:"EX-CLV-002-HIB-30ML", size:"30 ml", price:24000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Hubrido-Mockup_Mesa-de-trabajo-1-copia.jpg"},
@@ -632,7 +703,13 @@ let currentFilter = "all";
 let currentSearch = "";
 
 function waLink(p) {
-  const text = encodeURIComponent(`Hola, me interesa este producto:\n${p.name}${p.size ? " (" + p.size + ")" : ""}\nSKU: ${p.sku}`);
+  let detail = p.name;
+  if (p.items) {
+    detail += "\n" + p.items.map(it => "• " + it.name).join("\n");
+  } else if (p.size) {
+    detail += ` (${p.size})`;
+  }
+  const text = encodeURIComponent(`Hola, me interesa este producto:\n${detail}\nSKU: ${p.sku}`);
   return `https://wa.me/${WHATSAPP}?text=${text}`;
 }
 
@@ -641,6 +718,11 @@ function priceBlock(p) {
     return `<div class="price"><small>Precio</small><s class="old-price">${money(p.oldPrice)}</s>${money(p.price)}</div>`;
   }
   return `<div class="price"><small>Precio</small>${money(p.price)}</div>`;
+}
+
+function collageTile(it) {
+  if (it.link) return `<img src="${it.link}" alt="${it.name}" loading="lazy">`;
+  return `<div class="collage-placeholder"><span>${it.name}</span></div>`;
 }
 
 function render(filter) {
@@ -663,15 +745,20 @@ function render(filter) {
       const card = document.createElement("article");
       card.className = "card";
       const pct = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+      const thumbInner = p.items
+        ? `<div class="combo-collage collage-${p.items.length}">${p.items.map(collageTile).join("")}</div>`
+        : `<img src="${p.link}" alt="${p.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;"/>`;
+      const bodyMeta = p.items
+        ? `<p class="combo-hook">${p.hook}</p><ul class="combo-includes">${p.items.map(it => `<li>${it.name}</li>`).join("")}</ul>`
+        : `<div class="card-sku">SKU ${p.sku}</div>${p.size ? `<div class="card-meta">${p.size}</div>` : ""}`;
       card.innerHTML = `
         <div class="thumb">
           ${p.oldPrice ? `<span class="badge-sale">-${pct}%</span>` : ""}
-          <img src="${p.link}" alt="${p.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;"/>
+          ${thumbInner}
         </div>
         <div class="card-body">
           <div class="card-name">${p.name}</div>
-          <div class="card-sku">SKU ${p.sku}</div>
-          ${p.size ? `<div class="card-meta">${p.size}</div>` : ""}
+          ${bodyMeta}
           <div class="card-footer">
             ${priceBlock(p)}
             <div class="card-actions">
@@ -761,12 +848,14 @@ function renderCartUI() {
     cartItemsEl.innerHTML = cart.map(i => {
       const p = findProduct(i.sku);
       if (!p) return "";
+      const thumbSrc = p.link || (p.items && p.items.find(it => it.link) || {}).link || "";
+      const metaText = p.items ? `${p.items.length} productos` : (p.size || p.sku);
       return `
         <div class="cart-item" data-sku="${p.sku}">
-          <img src="${p.link}" alt="${p.name}">
+          <img src="${thumbSrc}" alt="${p.name}">
           <div class="cart-item-info">
             <div class="cart-item-name">${p.name}</div>
-            <div class="cart-item-meta">${p.size || p.sku}</div>
+            <div class="cart-item-meta">${metaText}</div>
             <div class="cart-item-row">
               <div class="qty-stepper">
                 <button type="button" data-action="dec">−</button>
@@ -908,6 +997,7 @@ checkoutForm.addEventListener("submit", e => {
     const p = findProduct(i.sku);
     if (!p) return;
     lines.push(`${idx + 1}. ${p.name}${p.size ? " (" + p.size + ")" : ""} x${i.qty} — ${money(p.price * i.qty)}`);
+    if (p.items) lines.push(`   Incluye: ${p.items.map(it => it.name).join(", ")}`);
   });
   lines.push("");
   lines.push(`*Total: ${money(cartTotal())}*`);
