@@ -51,6 +51,18 @@ a{-webkit-tap-highlight-color:transparent;}
 @keyframes mascotBob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-6px) rotate(2deg);}}
 @keyframes badgePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
 .reveal-in{animation:cardPop .55s cubic-bezier(.22,.9,.32,1) both;}
+
+.cursor-glow{
+  position:fixed;top:0;left:0;width:30px;height:30px;border-radius:50%;
+  background:radial-gradient(circle, rgba(125,91,130,.4), rgba(198,168,124,.2) 55%, transparent 72%);
+  pointer-events:none;z-index:9999;
+  transition:width .35s cubic-bezier(.2,.8,.2,1), height .35s cubic-bezier(.2,.8,.2,1), opacity .3s ease;
+  opacity:0;
+  will-change:transform;
+}
+.cursor-glow.active{opacity:1;}
+.cursor-glow.hover{width:64px;height:64px;background:radial-gradient(circle, rgba(198,168,124,.45), rgba(125,91,130,.22) 55%, transparent 72%);}
+@media (hover:none),(pointer:coarse){.cursor-glow{display:none !important;}}
 @keyframes floatOrb{0%,100%{transform:translate(0,0);}50%{transform:translate(24px,-30px);}}
 @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(8px);}}
 @keyframes pulseRing{0%{transform:scale(1);opacity:.55;}100%{transform:scale(1.9);opacity:0;}}
@@ -1557,6 +1569,38 @@ checkoutForm.addEventListener("submit", e => {
 });
 
 document.getElementById("year").textContent = new Date().getFullYear();
+
+const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (canHover && !reduceMotion) {
+  const glow = document.createElement("div");
+  glow.className = "cursor-glow";
+  document.body.appendChild(glow);
+  let mouseX = 0, mouseY = 0, glowX = 0, glowY = 0, active = false;
+  document.addEventListener("mousemove", e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!active) {
+      active = true;
+      glowX = mouseX;
+      glowY = mouseY;
+      glow.classList.add("active");
+    }
+  });
+  document.addEventListener("mouseleave", () => { active = false; glow.classList.remove("active"); });
+  document.addEventListener("mouseover", e => {
+    if (e.target.closest('a,button,[role="button"],.card,.chip,.promo-card,.learn-article-header')) glow.classList.add("hover");
+  });
+  document.addEventListener("mouseout", e => {
+    if (e.target.closest('a,button,[role="button"],.card,.chip,.promo-card,.learn-article-header')) glow.classList.remove("hover");
+  });
+  (function loop() {
+    glowX += (mouseX - glowX) * 0.18;
+    glowY += (mouseY - glowY) * 0.18;
+    glow.style.transform = `translate(${glowX}px, ${glowY}px) translate(-50%, -50%)`;
+    requestAnimationFrame(loop);
+  })();
+}
 
 render("all");
 renderCartUI();
