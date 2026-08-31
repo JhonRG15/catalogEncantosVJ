@@ -187,6 +187,7 @@ a{-webkit-tap-highlight-color:transparent;}
   overflow:hidden;
   display:flex;
   flex-direction:column;
+  cursor:pointer;
   transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease, opacity .6s ease;
   opacity:0;transform:translateY(20px);
 }
@@ -296,6 +297,34 @@ a{-webkit-tap-highlight-color:transparent;}
 .summary-total{display:flex;justify-content:space-between;font-family:'Cormorant Garamond', serif;font-size:1.15rem;color:var(--dorado);font-weight:600;padding-top:8px;border-top:1px solid rgba(198,168,124,.15);margin-top:4px;}
 .checkout-submit{width:100%;justify-content:center;}
 .checkout-hint{text-align:center;font-size:.72rem;color:rgba(237,227,221,.45);}
+
+/* ---------- PRODUCT MODAL ---------- */
+.product-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-48%);width:min(94vw,860px);max-height:88vh;overflow-y:auto;background:var(--negro-2);border:1px solid rgba(198,168,124,.3);border-radius:12px;z-index:81;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 30px 80px rgba(0,0,0,.6);}
+.product-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%);}
+.product-modal-close{position:absolute;top:16px;right:16px;z-index:2;background:rgba(13,10,14,.65);}
+.product-modal-body{display:grid;grid-template-columns:1fr 1fr;}
+.product-gallery{padding:28px;display:flex;flex-direction:column;gap:12px;}
+.product-gallery-main{aspect-ratio:1/1;border-radius:8px;overflow:hidden;background:var(--malva-profundo);}
+.product-gallery-main img{width:100%;height:100%;object-fit:cover;display:block;}
+.product-gallery-thumbs{display:flex;gap:8px;flex-wrap:wrap;}
+.product-gallery-thumbs img{width:56px;height:56px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid rgba(198,168,124,.25);opacity:.6;transition:opacity .2s,border-color .2s;}
+.product-gallery-thumbs img:hover{opacity:.85;}
+.product-gallery-thumbs img.active{opacity:1;border-color:var(--dorado);}
+.product-info{padding:52px 28px 32px;display:flex;flex-direction:column;gap:12px;}
+.product-info-tag{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--malva);}
+.product-info-name{font-family:'Cormorant Garamond', serif;font-weight:600;font-size:1.7rem;color:var(--crema);line-height:1.2;}
+.product-info-hook{font-size:.8rem;font-style:italic;color:var(--malva);}
+.product-info-desc{font-size:.86rem;color:rgba(237,227,221,.75);line-height:1.65;}
+.product-info-price{margin-top:2px;}
+.product-info-price .price{font-size:1.5rem;}
+.product-info-actions{display:flex;align-items:center;gap:14px;margin-top:8px;}
+.product-info-actions .btn{flex:1;justify-content:center;}
+.product-wa-btn{justify-content:center;}
+
+@media (max-width:680px){
+  .product-modal-body{grid-template-columns:1fr;}
+  .product-info{padding:20px 24px 28px;}
+}
 
 /* ---------- TOAST ---------- */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dorado);color:var(--negro);padding:12px 24px;border-radius:100px;font-size:.8rem;font-weight:500;letter-spacing:.03em;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:90;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;max-width:90vw;text-align:center;}
@@ -476,6 +505,34 @@ a{-webkit-tap-highlight-color:transparent;}
   </form>
 </div>
 
+<div class="modal-overlay" id="productOverlay"></div>
+<div class="product-modal" id="productModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <button class="drawer-close product-modal-close" id="productClose" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="product-modal-body">
+    <div class="product-gallery">
+      <div class="product-gallery-main" id="productGalleryMain"></div>
+      <div class="product-gallery-thumbs" id="productGalleryThumbs"></div>
+    </div>
+    <div class="product-info">
+      <div class="product-info-tag" id="productTag"></div>
+      <h3 class="product-info-name" id="productName"></h3>
+      <p class="product-info-hook" id="productHook"></p>
+      <p class="product-info-desc" id="productDesc"></p>
+      <ul class="combo-includes" id="productIncludes"></ul>
+      <div class="product-info-price" id="productPrice"></div>
+      <div class="product-info-actions">
+        <div class="qty-stepper" id="productQtyStepper">
+          <button type="button" data-action="dec">−</button>
+          <span id="productQty">1</span>
+          <button type="button" data-action="inc">+</button>
+        </div>
+        <button class="btn btn-primary" id="productAddBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Agregar al carrito</button>
+      </div>
+      <a class="btn btn-outline product-wa-btn" id="productWaBtn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a8.94 8.94 0 0 0-7.75 13.4L3 21l3.7-1.24a8.87 8.87 0 0 0 4.35 1.12h.02a8.94 8.94 0 0 0 6.53-15zM12.06 19.4a7.4 7.4 0 0 1-3.77-1.04l-.27-.16-2.8.94.75-2.73-.18-.28a7.44 7.44 0 1 1 13.8-3.9 7.4 7.4 0 0 1-7.53 7.17zm4.08-5.56c-.22-.11-1.32-.65-1.52-.73-.2-.07-.35-.11-.5.11-.15.22-.57.73-.7.88-.13.15-.26.16-.48.05-.22-.11-.94-.35-1.79-1.11-.66-.6-1.11-1.33-1.24-1.55-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.37.07-.15.04-.28-.02-.39-.07-.11-.5-1.21-.68-1.66-.18-.43-.36-.37-.5-.38h-.43c-.15 0-.39.05-.6.28-.2.22-.79.77-.79 1.87s.81 2.16.92 2.31c.11.15 1.6 2.44 3.87 3.42.54.23.96.37 1.29.48.54.17 1.03.15 1.42.09.43-.06 1.32-.54 1.51-1.06.19-.52.19-.96.13-1.06-.06-.1-.2-.15-.42-.26z"/></svg> Consultar por WhatsApp</a>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -547,73 +604,73 @@ const products = [
   ]},
 
   // Lubricantes Íntimos
-  {cat:"Lubricantes Íntimos", name:"Gel Lubricante Íntimo Natural Elixir – 50 ML", sku:"EX-CLV-6008-NAT-50ML", size:"50 ML", price:21000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Caja-y-producto--768x768.jpg"},
-  {cat:"Lubricantes Íntimos", name:"Lubricante Íntimo Híbrido Elixir – 30 ml", sku:"EX-CLV-002-HIB-30ML", size:"30 ml", price:24000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Hubrido-Mockup_Mesa-de-trabajo-1-copia.jpg"},
-  {cat:"Lubricantes Íntimos", name:"Lubricante Íntimo Piel Sensible Elixir – 100 ml", sku:"EX-CLV-6021-PIEL-SEN-100ML", size:"100 ml", price:35000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Piel-Sensible-2.jpg"},
-  {cat:"Lubricantes Íntimos", name:"Lubricante Blanco Cremoso Eyaculación Masculina – 250 ml", sku:"EX-CLV-6004-CREMOSO-250ML", size:"250 ml", price:46000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Cum-1-1.jpg"},
-  {cat:"Lubricantes Íntimos", name:"Lubricante Íntimo Caliente Erotika", sku:"EK-CLV-002-CALIENTE-CAR-30ML", size:"30 ml", price:25500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/10/lubricante-intimo-caliente-erotika-bali-sex-store-bali-sex-store.jpg"},
-  {cat:"Lubricantes Íntimos", name:"Elixir Anesty Lubricante Íntimo Anal Desensibilizante – 30ML", sku:"EX-CLA-6028-ANESTY-30ML", size:"30 ml", price:36500, link:"https://distrisexcolombia.com/wp-content/uploads/2026/01/Mockups-anesty-30ml-2.jpeg"},
-  {cat:"Lubricantes Íntimos", name:"Gel Lubricante Íntimo Natural Elixir – Sachet Caja x50", sku:"EX-CLV-001-NAT-5ML-CAJA", size:"", price:5000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Gel-Lubricante-Intimo-Natural-Elixir-5ml-DistriSex.jpg"},
+  {cat:"Lubricantes Íntimos", name:"Gel Lubricante Íntimo Natural Elixir – 50 ML", sku:"EX-CLV-6008-NAT-50ML", size:"50 ML", price:21000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Caja-y-producto--768x768.jpg", description:"Fórmula neutra a base de agua, sin fragancia ni colorantes, pensada para el cuidado íntimo diario. Compatible con preservativos de látex y juguetes íntimos, ofrece una lubricación suave y duradera.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/09/Gel-Lubricante-Intimo-Natural-Elixir-500ml.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Gel-Lubricante-Intimo-Natural-Elixir-5ml-x50-unidades.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Gel-Lubricante-Intimo-Natural-Elixir-5ml-DistriSex.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/03/natural.jpg"]},
+  {cat:"Lubricantes Íntimos", name:"Lubricante Íntimo Híbrido Elixir – 30 ml", sku:"EX-CLV-002-HIB-30ML", size:"30 ml", price:24000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Hubrido-Mockup_Mesa-de-trabajo-1-copia.jpg", description:"Lubricante híbrido agua-silicona de textura ligera y sedosa, con lubricación prolongada. Compatible con preservativos de látex y juguetes sexuales de silicona.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/03/Hubrido-Mockup_Mesa-de-trabajo-1.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/03/Hubrido-Mockup_Mesa-de-trabajo-1-copia-3.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/03/Hubrido-Mockup_Mesa-de-trabajo-1-copia-2.jpg"]},
+  {cat:"Lubricantes Íntimos", name:"Lubricante Íntimo Piel Sensible Elixir – 100 ml", sku:"EX-CLV-6021-PIEL-SEN-100ML", size:"100 ml", price:35000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/09/Piel-Sensible-2.jpg", description:"Lubricante a base de agua con ácido hialurónico, aloe vera, pepino y salvia, pensado para pieles sensibles o resecas. Sin fragancias ni colorantes; compatible con preservativos y juguetes.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/08/Diseno-sin-titulo-20.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/09/Piel-Sensible-1.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/09/Piel-Sensible-3.jpg"]},
+  {cat:"Lubricantes Íntimos", name:"Lubricante Blanco Cremoso Eyaculación Masculina – 250 ml", sku:"EX-CLV-6004-CREMOSO-250ML", size:"250 ml", price:46000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Cum-1-1.jpg", description:"Lubricante a base de agua con textura blanca y cremosa que imita visualmente la eyaculación masculina. Ideal para juegos en pareja, en solitario o con juguetes íntimos.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/02/cum-blanco-mockup.jpg.jpeg","https://distrisexcolombia.com/wp-content/uploads/2025/02/cum-blanco-mockup-back.jpg"]},
+  {cat:"Lubricantes Íntimos", name:"Lubricante Íntimo Caliente Erotika", sku:"EK-CLV-002-CALIENTE-CAR-30ML", size:"30 ml", price:25500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/10/lubricante-intimo-caliente-erotika-bali-sex-store-bali-sex-store.jpg", description:"Lubricante a base de agua con efecto calor y sabor a caramelo, apto también para sexo oral. El calor se activa con masajes circulares o soplando sobre la piel."},
+  {cat:"Lubricantes Íntimos", name:"Elixir Anesty Lubricante Íntimo Anal Desensibilizante – 30ML", sku:"EX-CLA-6028-ANESTY-30ML", size:"30 ml", price:36500, link:"https://distrisexcolombia.com/wp-content/uploads/2026/01/Mockups-anesty-30ml-2.jpeg", description:"Gel lubricante anal con efecto desensibilizante suave que ayuda a relajar la zona para una penetración más cómoda sin perder sensibilidad. Compatible con preservativos y juguetes.", images:["https://distrisexcolombia.com/wp-content/uploads/2026/05/Mockups-anesty-30ml.jpeg","https://distrisexcolombia.com/wp-content/uploads/2026/01/ANESTY-2.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/05/Mockups-anesty-30-back.jpg.jpeg","https://distrisexcolombia.com/wp-content/uploads/2026/05/Mockups-anesty-30-caja.jpg.jpeg"]},
+  {cat:"Lubricantes Íntimos", name:"Gel Lubricante Íntimo Natural Elixir – Sachet Caja x50", sku:"EX-CLV-001-NAT-5ML-CAJA", size:"", price:5000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Gel-Lubricante-Intimo-Natural-Elixir-5ml-DistriSex.jpg", description:"Sachet individual de 5 ml con la misma fórmula neutra a base de agua del Gel Natural Elixir. Ideal para vender por unidad, regalar o llevar de viaje.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/09/Gel-Lubricante-Intimo-Natural-Elixir-5ml-x50-unidades.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/09/Caja-y-producto-.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/03/natural.jpg"]},
 
   // Saborizados y Placer Oral
-  {cat:"Saborizados y Placer Oral", name:"Lubricante Saborizado Crema de Whisky Elixir", sku:"EX-CLV-004-WHI-30ML", size:"30 ml", price:23000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-WHI-30ML_4-1200x1200.jpg"},
-  {cat:"Saborizados y Placer Oral", name:"Lubricante Saborizado Fresa Bombón Elixir", sku:"EX-CLV-004-FRE-30ML", size:"30 ml", price:23000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-FRE-30ML_4-1200x1200.jpg"},
-  {cat:"Saborizados y Placer Oral", name:"Lubricante Saborizado Sandía Elixir – 30ML", sku:"EX-CLV-005-SAN-30ML", size:"30 ml", price:23000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/EX-CLV-005-SAN-30ML_4-1200x1200-1.jpg"},
-  {cat:"Saborizados y Placer Oral", name:"Lubricante Saborizado Chicle Elixir", sku:"EX-CLV-004-CHI-30ML", size:"30 ml", price:23000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/4_43427032-7871-459c-9fee-ab97fdbee544-1200x1200.jpg"},
-  {cat:"Saborizados y Placer Oral", name:"Gel Íntimo Saborizado Mora Azul Elixir – Caja x6", sku:"EX-CLV-6036-MORA-A-15ML-X6", size:"15 ml", price:15000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/MORA-AZUL-15-1200.jpeg"},
-  {cat:"Saborizados y Placer Oral", name:"Blow Pop Elixir – Caja x 24 Unidades", sku:"EX-CLV-009-BLOW-SUR-5GR-CJ24", size:"", price:8000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/01/Elixir-nov-dic-2023-2x2-1-1200x1200.jpg"},
+  {cat:"Saborizados y Placer Oral", name:"Lubricante Saborizado Crema de Whisky Elixir", sku:"EX-CLV-004-WHI-30ML", size:"30 ml", price:23000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-WHI-30ML_4-1200x1200.jpg", description:"Lubricante saborizado con efecto frío-caliente y sabor a crema de whisky, formulado a base de agua para uso íntimo prolongado.", images:["https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-WHI-30ML_1.jpg"]},
+  {cat:"Saborizados y Placer Oral", name:"Lubricante Saborizado Fresa Bombón Elixir", sku:"EX-CLV-004-FRE-30ML", size:"30 ml", price:23000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-FRE-30ML_4-1200x1200.jpg", description:"Lubricante saborizado con efecto frío-caliente y sabor a fresa con bombón, a base de agua, pensado para intensificar los encuentros íntimos.", images:["https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-FRE-30ML_1.jpg"]},
+  {cat:"Saborizados y Placer Oral", name:"Lubricante Saborizado Sandía Elixir – 30ML", sku:"EX-CLV-005-SAN-30ML", size:"30 ml", price:23000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/EX-CLV-005-SAN-30ML_4-1200x1200-1.jpg", description:"Lubricante saborizado a sandía con efecto frío-caliente, dermatológicamente probado, hipoalergénico y de pH balanceado, con lubricación de larga duración.", images:["https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-005-SAN-30ML_5.jpg","https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-005-SAN-30ML_3.jpg","https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-005-SAN-30ML_1.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/07/Sandia-15-1200.jpeg"]},
+  {cat:"Saborizados y Placer Oral", name:"Lubricante Saborizado Chicle Elixir", sku:"EX-CLV-004-CHI-30ML", size:"30 ml", price:23000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/02/4_43427032-7871-459c-9fee-ab97fdbee544-1200x1200.jpg", description:"Lubricante saborizado a chicle con efecto frío-caliente, a base de agua, ideal para complementar el sexo oral y otros juegos íntimos.", images:["https://distrisexcolombia.com/wp-content/uploads/2024/02/EX-CLV-004-CHI-30ML_1.jpg"]},
+  {cat:"Saborizados y Placer Oral", name:"Gel Íntimo Saborizado Mora Azul Elixir – Caja x6", sku:"EX-CLV-6036-MORA-A-15ML-X6", size:"15 ml", price:15000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/MORA-AZUL-15-1200.jpeg", description:"Gel íntimo saborizado a mora azul con efecto frío-caliente, hipoalergénico y de pH balanceado; presentación en caja de 6 unidades de 15 ml.", images:["https://distrisexcolombia.com/wp-content/uploads/2026/08/Exhibidor-mora-azul.jpeg","https://distrisexcolombia.com/wp-content/uploads/2026/08/Caja-x-24-Moraazul.jpeg","https://distrisexcolombia.com/wp-content/uploads/2026/08/sachet-moraazul.jpeg"]},
+  {cat:"Saborizados y Placer Oral", name:"Blow Pop Elixir – Caja x 24 Unidades", sku:"EX-CLV-009-BLOW-SUR-5GR-CJ24", size:"", price:8000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/01/Elixir-nov-dic-2023-2x2-1-1200x1200.jpg", description:"Caramelos explosivos y efervescentes en sabores sandía y mora azul, pensados para intensificar el sexo oral sin alterar el pH íntimo. Caja con 24 sobres de 5 g.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/12/Blowpop-2.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/12/Blowpop-3.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/12/Blowpop-1.png"]},
 
   // Masajes
-  {cat:"Masajes", name:"Aceite Caliente para Masajes Delicius – Dados Sabores Surtidos", sku:"NS-CRT-004-SUR-DADOS", size:"15 ml", price:18500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/10/Lubricante-intimo-Caliente-Delicius-Con-Dados-frutos-rojo-Manzanas_balisexstore-2.jpg"},
+  {cat:"Masajes", name:"Aceite Caliente para Masajes Delicius – Dados Sabores Surtidos", sku:"NS-CRT-004-SUR-DADOS", size:"15 ml", price:18500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/10/Lubricante-intimo-Caliente-Delicius-Con-Dados-frutos-rojo-Manzanas_balisexstore-2.jpg", description:"Aceite tibio y comestible para masajes sensuales y sexo oral, textura sedosa, en dados individuales de sabores frutales surtidos como uva y frutos rojos.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/10/ubricante-intimo-Caliente-Delicius-Con-Dados-Uva_balisexstore-3.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/10/Lubricante-intimo-Caliente-Delicius-Con-Dados-frutos-rojos_balisexstore-1.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/10/ubricante-intimo-Caliente-Delicius-Con-Dados_balisexstore-4.jpg"]},
   // Potenciadores
-  {cat:"Potenciadores", name:"Multiorgasmos Fraud Og", sku:"NS-CGM-001-MULTIFRAUD-6G", size:"6 g", price:12000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/10/Woman-00-1-300x300.jpg"},
-  {cat:"Potenciadores", name:"Retardante Rhino Forte Spray", sku:"NS-CRT-002-RHINOF-5ML", size:"5 ml", price:19000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Crema-Masajes-01-300x300.jpg"},
-  {cat:"Potenciadores", name:"Frequency Vibrador Líquido", sku:"EX-CLV-6011-VIB-15ML", size:"15 ml", price:38000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Frequency-02-1200x1200.jpg"},
+  {cat:"Potenciadores", name:"Multiorgasmos Fraud Og", sku:"NS-CGM-001-MULTIFRAUD-6G", size:"6 g", price:12000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/10/Woman-00-1-300x300.jpg", description:"Crema estimulante femenina con efecto cosquilleo en zonas erógenas y sabor a menta, apta para antes del sexo oral; se aplica con masajes circulares.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/10/Woman-01-1.jpg"]},
+  {cat:"Potenciadores", name:"Retardante Rhino Forte Spray", sku:"NS-CRT-002-RHINOF-5ML", size:"5 ml", price:19000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Crema-Masajes-01-300x300.jpg", description:"Spray retardante para hombres que reduce la sensibilidad del glande, ayudando a controlar la eyaculación y prolongar la relación. Compatible con condones.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/03/Crema-Masajes-02.jpg"]},
+  {cat:"Potenciadores", name:"Frequency Vibrador Líquido", sku:"EX-CLV-6011-VIB-15ML", size:"15 ml", price:38000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Frequency-02-1200x1200.jpg", description:"Gel lubricante con alquilamidas naturales que genera una sensación vibrante y pulsátil en el clítoris al aplicarlo, similar al efecto de un juguete sexual.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/01/Frequency-01.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/01/Frequency-00.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/06/Frequency-24-unidades-exhibidor.jpg.jpeg"]},
 
   // Vibradores
-  {cat:"Vibradores", name:"Double Wand Vibrador Doble Camtoyz", sku:"CT-JVB-1165-DOUBLEWAND", size:"", price:123000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/6-13-300x300.jpg"},
-  {cat:"Vibradores", name:"Lovense Lush 4", sku:"LV-JVB-023-LUSH4-FUC", size:"Fucsia", price:600000, oldPrice:650000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Lush-4-1-300x300.png"},
-  {cat:"Vibradores", name:"Vibrador Hitachi Lunara Camtoyz", sku:"CT-JVB-165-LUNARA-LIL", size:"Lila", price:70000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/1-30-300x300.jpg"},
-  {cat:"Vibradores", name:"O-Bullet Bala Vibradora Recargable Camtoyz", sku:"CT-JVB-1153-O-BULLET", size:"", price:40000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/04/ChatGPT-Image-6-may-2026-17_25_29-300x300.png"},
+  {cat:"Vibradores", name:"Double Wand Vibrador Doble Camtoyz", sku:"CT-JVB-1165-DOUBLEWAND", size:"", price:123000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/6-13-300x300.jpg", description:"Vibrador de doble motor con cabezal redondeado y aletas flexibles para estimulación externa intensa, en silicona suave, recargable por USB y resistente al agua.", images:["https://distrisexcolombia.com/wp-content/uploads/2026/07/7-14.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/07/5-12.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/07/3-30.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/07/2-56.jpg"]},
+  {cat:"Vibradores", name:"Lovense Lush 4", sku:"LV-JVB-023-LUSH4-FUC", size:"Fucsia", price:600000, oldPrice:650000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/01/Lush-4-1-300x300.png", description:"Vibrador para punto G controlado por app Lovense, con luz LED multicolor personalizable, carga rápida y hasta 7000 vibraciones por minuto, ideal para control remoto en pareja.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/01/Lush-4-2.png","https://distrisexcolombia.com/wp-content/uploads/2025/01/Lush-4-3.png","https://distrisexcolombia.com/wp-content/uploads/2025/01/Lush-4-4.png","https://distrisexcolombia.com/wp-content/uploads/2025/01/Lush-4-package-1.png"]},
+  {cat:"Vibradores", name:"Vibrador Hitachi Lunara Camtoyz", sku:"CT-JVB-165-LUNARA-LIL", size:"Lila", price:70000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/1-30-300x300.jpg", description:"Mini wand vibrador compacto y discreto, con cabeza redondeada para estimulación externa precisa, ideal para uso individual o en pareja gracias a su tamaño portátil de 10 cm.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/09/5-25.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/4-29-1.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/2-33.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/3-32.jpg"]},
+  {cat:"Vibradores", name:"O-Bullet Bala Vibradora Recargable Camtoyz", sku:"CT-JVB-1153-O-BULLET", size:"", price:40000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/04/ChatGPT-Image-6-may-2026-17_25_29-300x300.png", description:"Bala vibradora recargable con anillo ergonómico para mejor agarre, 10 modos de vibración enfocados en estimulación clitoriana y resistencia al agua, ideal para principiantes.", images:["https://distrisexcolombia.com/wp-content/uploads/2026/04/OBullet-3.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/04/OBullet-1.jpg"]},
 
   // Dildos
-  {cat:"Dildos", name:"Flofy Dildo Ultra Suave Camtoyz", sku:"CT-JDI-1157-FLOFY-PIE", size:"Piel clara", price:76000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/05/3-4-300x300.jpg"},
-  {cat:"Dildos", name:"Dildo Ultra Realista Dager 17cm Camtoyz", sku:"CT-JDI-1010-DAGER", size:"17 cm", price:110000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/01/Dildo-Ultrarealista-Dager6-300x300.jpg"},
-  {cat:"Dildos", name:"Dildo de Vidrio Amara 17cm Camtoyz", sku:"CT-JVD-004-AMARA", size:"17 cm", price:56500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/12/Amara5-300x300.jpg"},
-  {cat:"Dildos", name:"Dildo Ultrarrealista Declan Camtoyz", sku:"CT-JDI-1080-DECLAN", size:"", price:190000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/11/Declan-1-300x300.jpg"},
-  {cat:"Dildos", name:"Dildo Vortex Camtoyz Kosmos", sku:"CT-JDI-1048-VORTEX", size:"", price:175000, oldPrice:195000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/10/Vortex-8-300x300.jpg"},
-  {cat:"Dildos", name:"Dildo Radiant Siena Camtoyz Kosmos", sku:"CT-JDI-1045-SIENA", size:"", price:145000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/10/Siena-3-300x300.jpg"},
+  {cat:"Dildos", name:"Flofy Dildo Ultra Suave Camtoyz", sku:"CT-JDI-1157-FLOFY-PIE", size:"Piel clara", price:76000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/05/3-4-300x300.jpg", description:"Dildo flexible de TPE ultrasuave de 22 cm con ventosa para uso manos libres, en tono piel clara, pensado para una sensación cómoda y realista.", images:["https://distrisexcolombia.com/wp-content/uploads/2026/05/4-5.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/05/3-5.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/05/4-4.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/05/1-3.jpg"]},
+  {cat:"Dildos", name:"Dildo Ultra Realista Dager 17cm Camtoyz", sku:"CT-JDI-1010-DAGER", size:"17 cm", price:110000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/01/Dildo-Ultrarealista-Dager6-300x300.jpg", description:"Dildo ultrarrealista de tamaño compacto con testículos pronunciados y textura detallada, de la línea Raw de Camtoyz, pensado para una sensación auténtica.", images:["https://distrisexcolombia.com/wp-content/uploads/2024/01/Dildo-Ultrarealista-Dager.jpg","https://distrisexcolombia.com/wp-content/uploads/2024/01/Dildo-Ultrarealista-Dager2.jpg","https://distrisexcolombia.com/wp-content/uploads/2024/01/Dildo-Ultrarealista-Dager3.jpg","https://distrisexcolombia.com/wp-content/uploads/2024/01/Dildo-Ultrarealista-Dager4.jpg"]},
+  {cat:"Dildos", name:"Dildo de Vidrio Amara 17cm Camtoyz", sku:"CT-JVD-004-AMARA", size:"17 cm", price:56500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/12/Amara5-300x300.jpg", description:"Dildo de vidrio transparente de la línea Vitro, con punta en forma de estrella y tres bolas insertables; apto para jugar con temperaturas frío/calor.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/12/Amara4.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/12/Amara3.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/12/Amara2.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/12/Amara.jpg"]},
+  {cat:"Dildos", name:"Dildo Ultrarrealista Declan Camtoyz", sku:"CT-JDI-1080-DECLAN", size:"", price:190000, link:"https://distrisexcolombia.com/wp-content/uploads/2024/11/Declan-1-300x300.jpg", description:"Dildo ultrarrealista en silicona líquida de la línea Raw, con ventosa para uso manos libres y textura que imita fielmente la apariencia y el tacto natural.", images:["https://distrisexcolombia.com/wp-content/uploads/2024/11/Declan-6.jpg","https://distrisexcolombia.com/wp-content/uploads/2024/11/Declan-3.jpg","https://distrisexcolombia.com/wp-content/uploads/2024/11/Declan-4.jpg","https://distrisexcolombia.com/wp-content/uploads/2024/11/Declan-5.jpg"]},
+  {cat:"Dildos", name:"Dildo Vortex Camtoyz Kosmos", sku:"CT-JDI-1048-VORTEX", size:"", price:175000, oldPrice:195000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/10/Vortex-8-300x300.jpg", description:"Dildo fantasía tipo tentáculo en colores rojo, azul y dorado, con texturas y venas marcadas y ventosa para fijarlo a superficies; línea Kosmos pensada para shows.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/10/Vortex3.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/10/Vortex7.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/10/Vortex6.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/10/Vortex5.jpg"]},
+  {cat:"Dildos", name:"Dildo Radiant Siena Camtoyz Kosmos", sku:"CT-JDI-1045-SIENA", size:"", price:145000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/10/Siena-3-300x300.jpg", description:"Dildo fantasía en tonos azul y rosado con relieve tipo escamas y ventosa para fijarlo a superficies, de la línea Kosmos pensada para shows y contenido creativo.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/10/Siena-4.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/10/Siena-7.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/10/Siena-6.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/10/Siena-5.jpg"]},
 
   // Plugs Anales
-  {cat:"Plugs Anales", name:"Plug Anal con Cola Pegaso Camtoyz", sku:"CT-JAN-062-PEGASO-LIL", size:"Lila", price:39000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/plug-anal-con-cola-pegaso_1-300x300.jpg"},
-  {cat:"Plugs Anales", name:"Plug Anal con Cola Jein Camtoyz", sku:"CT-JAN-047-JEIN-NEG", size:"Negro", price:50000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/plug-anal-con-cola-jein_1-300x300.jpg"},
-  {cat:"Plugs Anales", name:"Plug Anal Axel Camtoyz", sku:"CT-JAN-086-AXEL-ROS-S", size:"Rosado · S", price:23500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-Axel-1200x1200.jpg"},
-  {cat:"Plugs Anales", name:"Plug Anal Rómulo Camtoyz", sku:"CT-JAN-014-ROMULO-S-PLA", size:"Talla S", price:26000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado4-1-300x300.jpg"},
-  {cat:"Plugs Anales", name:"Plug Anal Rómulo Camtoyz", sku:"CT-JAN-014-ROMULO-XS-PLA", size:"Talla XS", price:22500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado4-1-300x300.jpg"},
-  {cat:"Plugs Anales", name:"Plug Anal Rómulo Camtoyz", sku:"CT-JAN-014-ROMULO-XXS-PLA", size:"Talla XXS", price:22000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado4-1-300x300.jpg"},
+  {cat:"Plugs Anales", name:"Plug Anal con Cola Pegaso Camtoyz", sku:"CT-JAN-062-PEGASO-LIL", size:"Lila", price:39000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/plug-anal-con-cola-pegaso_1-300x300.jpg", description:"Plug anal en acero inoxidable con cola de pelo sintético color violeta, diseñado para juegos de rol tipo pony play."},
+  {cat:"Plugs Anales", name:"Plug Anal con Cola Jein Camtoyz", sku:"CT-JAN-047-JEIN-NEG", size:"Negro", price:50000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/plug-anal-con-cola-jein_1-300x300.jpg", description:"Plug anal pequeño en acero inoxidable con cola de zorro en pelo sintético suave, ideal para iniciación anal y juegos de rol.", images:["https://distrisexcolombia.com/wp-content/uploads/2026/02/Plug-Anal-con-Cola-Jein-6.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/02/Plug-Anal-con-Cola-Jein-5.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/02/Plug-Anal-con-Cola-Jein-2.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/02/Plug-Anal-con-Cola-Jein-3.jpg"]},
+  {cat:"Plugs Anales", name:"Plug Anal Axel Camtoyz", sku:"CT-JAN-086-AXEL-ROS-S", size:"Rosado · S", price:23500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-Axel-1200x1200.jpg", description:"Plug anal cónico de la línea Onix, en color rosado, con base ensanchada para extracción segura y textura suave para estimulación anal cómoda.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-Axel-rosado.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-Axel3.jpg"]},
+  {cat:"Plugs Anales", name:"Plug Anal Rómulo Camtoyz", sku:"CT-JAN-014-ROMULO-S-PLA", size:"Talla S", price:26000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado4-1-300x300.jpg", description:"Plug anal Onix Rómulo en color plateado, de forma cónica gradual y base ancha, ideal para principiantes; disponible en tallas S, XS y XXS.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/09/ct-jan-014-romulo-s-pla_1.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/ct-jan-014-romulo-s-pla_3.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado-3.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado5.jpg"]},
+  {cat:"Plugs Anales", name:"Plug Anal Rómulo Camtoyz", sku:"CT-JAN-014-ROMULO-XS-PLA", size:"Talla XS", price:22500, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado4-1-300x300.jpg", description:"Plug anal Onix Rómulo en color plateado, de forma cónica gradual y base ancha, ideal para principiantes; disponible en tallas S, XS y XXS.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/09/ct-jan-014-romulo-s-pla_1.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/ct-jan-014-romulo-s-pla_3.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado-3.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado5.jpg"]},
+  {cat:"Plugs Anales", name:"Plug Anal Rómulo Camtoyz", sku:"CT-JAN-014-ROMULO-XXS-PLA", size:"Talla XXS", price:22000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado4-1-300x300.jpg", description:"Plug anal Onix Rómulo en color plateado, de forma cónica gradual y base ancha, ideal para principiantes; disponible en tallas S, XS y XXS.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/09/ct-jan-014-romulo-s-pla_1.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/ct-jan-014-romulo-s-pla_3.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado-3.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Plug-romulo-plateado5.jpg"]},
 
   // Bondage y Accesorios
-  {cat:"Bondage y Accesorios", name:"Kit Bondage Capri", sku:"CT-PKB-010-CAPRI-NEG", size:"Negro", price:94000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Kit-bondage-capri-camtoyz-DistriSex-300x300.jpg"},
-  {cat:"Bondage y Accesorios", name:"Boundy Amarre para Muñecas y Tobillos Camtoyz", sku:"CT-PAE-1163-BOUNDY", size:"", price:25000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/3-29-300x300.jpg"},
+  {cat:"Bondage y Accesorios", name:"Kit Bondage Capri", sku:"CT-PKB-010-CAPRI-NEG", size:"Negro", price:94000, link:"https://distrisexcolombia.com/wp-content/uploads/2023/09/Kit-bondage-capri-camtoyz-DistriSex-300x300.jpg", description:"Kit de bondage color negro con amarres para manos y pies, mordaza, antifaz y látigo, pensado para juegos de dominación y sumisión en pareja.", images:["https://distrisexcolombia.com/wp-content/uploads/2023/09/Kit-bondage-capri-camtoyz-DistriSex2.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/Kit-bondage-capri-camtoyz-DistriSex4.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/capri-caja-atras.jpg","https://distrisexcolombia.com/wp-content/uploads/2023/09/capri-caja-frente.jpg"]},
+  {cat:"Bondage y Accesorios", name:"Boundy Amarre para Muñecas y Tobillos Camtoyz", sku:"CT-PAE-1163-BOUNDY", size:"", price:25000, link:"https://distrisexcolombia.com/wp-content/uploads/2026/07/3-29-300x300.jpg", description:"Set de amarres en nylon con cierre autoadhesivo para muñecas y tobillos, ajustables y suaves al contacto con la piel, pensado para juegos de sujeción en pareja.", images:["https://distrisexcolombia.com/wp-content/uploads/2026/07/4-22-1.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/07/2-55.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/07/1-56.jpg"]},
 
   // Masturbadores
-  {cat:"Masturbadores", name:"Masturbadora Realista Jolie Camtoyz", sku:"CT-JMM-1090-JOLIE", size:"", price:70000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Jolie-01-300x300.jpg"},
-  {cat:"Masturbadores", name:"Masturbadora Ultrarrealista Sabrina Camtoyz", sku:"CT-JMM-1125-SABRINA", size:"", price:145500, link:"https://distrisexcolombia.com/wp-content/uploads/2026/02/4-300x300.jpg"},
+  {cat:"Masturbadores", name:"Masturbadora Realista Jolie Camtoyz", sku:"CT-JMM-1090-JOLIE", size:"", price:70000, link:"https://distrisexcolombia.com/wp-content/uploads/2025/03/Jolie-01-300x300.jpg", description:"Masturbador masculino de un solo canal en TPE suave, de la línea Optimus, con textura realista y dos modos de uso; se recomienda lubricante a base de agua.", images:["https://distrisexcolombia.com/wp-content/uploads/2025/03/Jolie-04.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/03/Jolie-03.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/03/Jolie-05.jpg","https://distrisexcolombia.com/wp-content/uploads/2025/03/Jolie-00.jpg"]},
+  {cat:"Masturbadores", name:"Masturbadora Ultrarrealista Sabrina Camtoyz", sku:"CT-JMM-1125-SABRINA", size:"", price:145500, link:"https://distrisexcolombia.com/wp-content/uploads/2026/02/4-300x300.jpg", description:"Masturbador masculino ultrarrealista en silicona premium body-safe, con canal interno texturizado y acabado pintado a mano para un aspecto natural.", images:["https://distrisexcolombia.com/wp-content/uploads/2026/02/7.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/02/6.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/02/5.jpg","https://distrisexcolombia.com/wp-content/uploads/2026/02/8.jpg"]},
 
   // Lenceria
-  {cat:"Lencería", name:"Set Seduluxe", sku:"LN-ST-SDLX-001-UN", size:"Talla L", price:65000, link:"https://i.ibb.co/6cMNgjLS/Whats-App-Image-2026-08-17-at-11-36-29-PM-1.jpg"},
-  {cat:"Lencería", name:"Set Romantic Morado", sku:"LN-ST-RTIC-001-MRD", size:"Talla M", price:75000, link:"https://i.ibb.co/WNw0f0WQ/Whats-App-Image-2026-08-17-at-11-36-29-PM-2.jpg"},
-  {cat:"Lencería", name:"Set Diva", sku:"LN-ST-DIVA-001", size:"Talla M", price:60500, link:"https://i.ibb.co/Mkqw4StQ/Whats-App-Image-2026-08-17-at-11-36-29-PM-3.jpg"},
-  {cat:"Lencería", name:"Set Siena", sku:"LN-ST-SIENA-001", size:"Talla S", price:60500, link:"https://i.ibb.co/mCG85hHM/Whats-App-Image-2026-08-17-at-11-36-30-PM-1.jpg"},
-  {cat:"Lencería", name:"Set Spicy", sku:"LN-ST-SPICY-001", size:"Talla M", price:65000, link:"https://i.ibb.co/zTS5xrwd/Whats-App-Image-2026-08-17-at-11-36-31-PM-1.jpg"},
-  {cat:"Lencería", name:"Set Romantic Rosado", sku:"LN-ST-RTIC-002-RSD", size:"Talla S", price:80000, link:"https://i.ibb.co/xt4SmxR8/Whats-App-Image-2026-08-17-at-11-36-31-PM-3.jpg"},
-  {cat:"Lencería", name:"Set Charlotte", sku:"LN-ST-CHRT-001", size:"Talla S", price:86000, link:"https://i.ibb.co/FTZgCW1/Whats-App-Image-2026-08-17-at-11-36-31-PM.jpg"},
-  {cat:"Lencería", name:"Set Cristal Vow Azul Marino", sku:"LN-ST-CVOW-001-AZM", size:"Talla S", price:80000, link:"https://i.ibb.co/ymF5pwWr/Whats-App-Image-2026-08-17-at-11-36-32-PM-1.jpg"},
-  {cat:"Lencería", name:"Set Cristal Vow Blanco", sku:"LN-ST-CVOW-002-BLN", size:"Talla M", price:80000, link:"https://i.ibb.co/7qrtv5Q/Whats-App-Image-2026-08-17-at-11-36-32-PM-4.jpg"},
-  {cat:"Lencería", name:"Set PetitDoll", sku:"LN-ST-PTDL-001", size:"Talla S", price:65000, link:"https://i.ibb.co/5hQXf9GG/Whats-App-Image-2026-08-17-at-11-36-32-PM.jpg"},
-  {cat:"Lencería", name:"Set ALORUH", sku:"LN-ST-ALORUH-001", size:"Talla L", price:54500, link:"https://i.ibb.co/d0LJ89q5/Whats-App-Image-2026-08-17-at-11-36-33-PM-1.jpg"},
-  {cat:"Lencería", name:"Set Charlotte Rosa", sku:"LN-ST-CHRT-002-RSD", size:"Talla L", price:88000, link:"https://i.ibb.co/jvjKXHqV/Whats-App-Image-2026-08-17-at-11-36-34-PM-1.jpg"},
-  {cat:"Lencería", name:"Set Bad Girl", sku:"LN-ST-BGRL-001", size:"Talla M, S", price:65000, link:"https://i.ibb.co/GfD1v0jy/Whats-App-Image-2026-08-17-at-11-36-34-PM-2.jpg"},
+  {cat:"Lencería", name:"Set Seduluxe", sku:"LN-ST-SDLX-001-UN", size:"Talla L", price:65000, link:"https://i.ibb.co/6cMNgjLS/Whats-App-Image-2026-08-17-at-11-36-29-PM-1.jpg", description:"Conjunto de lencería en encaje fino con acabados delicados, pensado para sentirte elegante y segura en cualquier ocasión especial."},
+  {cat:"Lencería", name:"Set Romantic Morado", sku:"LN-ST-RTIC-001-MRD", size:"Talla M", price:75000, link:"https://i.ibb.co/WNw0f0WQ/Whats-App-Image-2026-08-17-at-11-36-29-PM-2.jpg", description:"Set romántico en tono morado con detalles en encaje, ideal para una noche especial en pareja."},
+  {cat:"Lencería", name:"Set Diva", sku:"LN-ST-DIVA-001", size:"Talla M", price:60500, link:"https://i.ibb.co/Mkqw4StQ/Whats-App-Image-2026-08-17-at-11-36-29-PM-3.jpg", description:"Diseño femenino y favorecedor que resalta tu figura con un toque sofisticado."},
+  {cat:"Lencería", name:"Set Siena", sku:"LN-ST-SIENA-001", size:"Talla S", price:60500, link:"https://i.ibb.co/mCG85hHM/Whats-App-Image-2026-08-17-at-11-36-30-PM-1.jpg", description:"Lencería ligera y cómoda con transparencias delicadas, perfecta para el día a día o una ocasión especial."},
+  {cat:"Lencería", name:"Set Spicy", sku:"LN-ST-SPICY-001", size:"Talla M", price:65000, link:"https://i.ibb.co/zTS5xrwd/Whats-App-Image-2026-08-17-at-11-36-31-PM-1.jpg", description:"Conjunto atrevido con detalles en encaje, pensado para quienes buscan un toque de picardía."},
+  {cat:"Lencería", name:"Set Romantic Rosado", sku:"LN-ST-RTIC-002-RSD", size:"Talla S", price:80000, link:"https://i.ibb.co/xt4SmxR8/Whats-App-Image-2026-08-17-at-11-36-31-PM-3.jpg", description:"Versión en rosado del set Romantic, suave y femenino, con encaje delicado."},
+  {cat:"Lencería", name:"Set Charlotte", sku:"LN-ST-CHRT-001", size:"Talla S", price:86000, link:"https://i.ibb.co/FTZgCW1/Whats-App-Image-2026-08-17-at-11-36-31-PM.jpg", description:"Set elegante con líneas depuradas y encaje sutil, cómodo para uso prolongado."},
+  {cat:"Lencería", name:"Set Cristal Vow Azul Marino", sku:"LN-ST-CVOW-001-AZM", size:"Talla S", price:80000, link:"https://i.ibb.co/ymF5pwWr/Whats-App-Image-2026-08-17-at-11-36-32-PM-1.jpg", description:"Conjunto en tono azul marino con transparencias finas, ideal para looks íntimos con un toque sofisticado."},
+  {cat:"Lencería", name:"Set Cristal Vow Blanco", sku:"LN-ST-CVOW-002-BLN", size:"Talla M", price:80000, link:"https://i.ibb.co/7qrtv5Q/Whats-App-Image-2026-08-17-at-11-36-32-PM-4.jpg", description:"Versión en blanco del set Cristal Vow, perfecta para despedidas de soltera o noches especiales."},
+  {cat:"Lencería", name:"Set PetitDoll", sku:"LN-ST-PTDL-001", size:"Talla S", price:65000, link:"https://i.ibb.co/5hQXf9GG/Whats-App-Image-2026-08-17-at-11-36-32-PM.jpg", description:"Diseño juvenil y coqueto con encaje delicado, cómodo y favorecedor."},
+  {cat:"Lencería", name:"Set ALORUH", sku:"LN-ST-ALORUH-001", size:"Talla L", price:54500, link:"https://i.ibb.co/d0LJ89q5/Whats-App-Image-2026-08-17-at-11-36-33-PM-1.jpg", description:"Conjunto de lencería con diseño moderno, pensado para realzar tu silueta con comodidad."},
+  {cat:"Lencería", name:"Set Charlotte Rosa", sku:"LN-ST-CHRT-002-RSD", size:"Talla L", price:88000, link:"https://i.ibb.co/jvjKXHqV/Whats-App-Image-2026-08-17-at-11-36-34-PM-1.jpg", description:"Versión rosa del set Charlotte, con encaje suave y un ajuste favorecedor."},
+  {cat:"Lencería", name:"Set Bad Girl", sku:"LN-ST-BGRL-001", size:"Talla M, S", price:65000, link:"https://i.ibb.co/GfD1v0jy/Whats-App-Image-2026-08-17-at-11-36-34-PM-2.jpg", description:"Set atrevido de encaje con diseño llamativo, para quienes buscan un look más intenso."},
 ];
 
 const PAYMENT_METHODS = [
@@ -744,6 +801,7 @@ function render(filter) {
     items.forEach(p => {
       const card = document.createElement("article");
       card.className = "card";
+      card.dataset.sku = p.sku;
       const pct = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
       const thumbInner = p.items
         ? `<div class="combo-collage collage-${p.items.length}">${p.items.map(collageTile).join("")}</div>`
@@ -791,9 +849,82 @@ searchInput.addEventListener("input", e => {
 });
 
 catalog.addEventListener("click", e => {
-  const btn = e.target.closest("[data-add-sku]");
+  const addBtn = e.target.closest("[data-add-sku]");
+  if (addBtn) { addToCart(addBtn.dataset.addSku); return; }
+  if (e.target.closest(".wa-btn")) return;
+  const card = e.target.closest(".card[data-sku]");
+  if (card) openProductModal(card.dataset.sku);
+});
+
+function galleryFor(p) {
+  const list = p.items ? p.items.map(it => it.link) : [p.link, ...(p.images || [])];
+  return [...new Set(list.filter(Boolean))];
+}
+
+let currentProductSku = null;
+let productModalQty = 1;
+
+const productOverlay = document.getElementById("productOverlay");
+const productModal = document.getElementById("productModal");
+const productClose = document.getElementById("productClose");
+const productGalleryMain = document.getElementById("productGalleryMain");
+const productGalleryThumbs = document.getElementById("productGalleryThumbs");
+const productQtyEl = document.getElementById("productQty");
+
+function openProductModal(sku) {
+  const p = findProduct(sku);
+  if (!p) return;
+  currentProductSku = sku;
+  productModalQty = 1;
+  productQtyEl.textContent = productModalQty;
+
+  document.getElementById("productTag").textContent = p.cat;
+  document.getElementById("productName").textContent = p.name;
+  const hookEl = document.getElementById("productHook");
+  hookEl.textContent = p.hook || "";
+  hookEl.style.display = p.hook ? "block" : "none";
+  document.getElementById("productDesc").textContent = p.description || "";
+  document.getElementById("productIncludes").innerHTML = p.items ? p.items.map(it => `<li>${it.name}</li>`).join("") : "";
+  document.getElementById("productPrice").innerHTML = priceBlock(p);
+  document.getElementById("productWaBtn").href = waLink(p);
+
+  const images = galleryFor(p);
+  productGalleryMain.innerHTML = `<img src="${images[0] || ""}" alt="${p.name}">`;
+  productGalleryThumbs.innerHTML = images.length > 1
+    ? images.map((src, i) => `<img src="${src}" alt="${p.name}" class="${i === 0 ? "active" : ""}" data-src="${src}">`).join("")
+    : "";
+
+  productModal.classList.add("open");
+  productOverlay.classList.add("open");
+  productModal.setAttribute("aria-hidden", "false");
+}
+function closeProductModal() {
+  productModal.classList.remove("open");
+  productOverlay.classList.remove("open");
+  productModal.setAttribute("aria-hidden", "true");
+}
+productClose.addEventListener("click", closeProductModal);
+productOverlay.addEventListener("click", closeProductModal);
+
+productGalleryThumbs.addEventListener("click", e => {
+  const img = e.target.closest("img[data-src]");
+  if (!img) return;
+  productGalleryMain.querySelector("img").src = img.dataset.src;
+  productGalleryThumbs.querySelectorAll("img").forEach(t => t.classList.remove("active"));
+  img.classList.add("active");
+});
+
+document.getElementById("productQtyStepper").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-action]");
   if (!btn) return;
-  addToCart(btn.dataset.addSku);
+  if (btn.dataset.action === "inc") productModalQty++;
+  if (btn.dataset.action === "dec") productModalQty = Math.max(1, productModalQty - 1);
+  productQtyEl.textContent = productModalQty;
+});
+document.getElementById("productAddBtn").addEventListener("click", () => {
+  if (!currentProductSku) return;
+  addToCart(currentProductSku, productModalQty);
+  closeProductModal();
 });
 
 const CART_KEY = "encantosvj_cart";
@@ -873,9 +1004,9 @@ function renderCartUI() {
   renderCheckoutSummary();
 }
 
-function addToCart(sku) {
+function addToCart(sku, qty = 1) {
   const existing = cart.find(i => i.sku === sku);
-  if (existing) { existing.qty += 1; } else { cart.push({ sku, qty: 1 }); }
+  if (existing) { existing.qty += qty; } else { cart.push({ sku, qty }); }
   saveCart();
   renderCartUI();
   showToast("Producto agregado al carrito");
@@ -954,7 +1085,7 @@ checkoutClose.addEventListener("click", closeCheckout);
 checkoutOverlay.addEventListener("click", closeCheckout);
 
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") { closeCart(); closeCheckout(); }
+  if (e.key === "Escape") { closeCart(); closeCheckout(); closeProductModal(); }
 });
 
 const paymentOptionsEl = document.getElementById("paymentOptions");
