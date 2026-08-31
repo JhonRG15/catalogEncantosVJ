@@ -16,6 +16,8 @@
   --crema:#EDE3DD;
   --negro:#0D0A0E;
   --negro-2:#150f18;
+  --morado-vivo:#8E5AA8;
+  --morado-vivo-deep:#5C3568;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -108,6 +110,9 @@ a{-webkit-tap-highlight-color:transparent;}
 .scroll-cue{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);color:var(--dorado);opacity:.85;z-index:3;animation:bounce 2.2s ease-in-out infinite;}
 .scroll-cue svg{width:26px;height:26px;}
 
+.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+.nav-overlay.open{opacity:1;pointer-events:auto;}
+
 @media (max-width:860px){
   .nav-links{
     position:fixed;top:0;right:0;height:100vh;width:min(78vw,320px);
@@ -115,13 +120,42 @@ a{-webkit-tap-highlight-color:transparent;}
     padding:40px;background:rgba(13,10,14,.97);backdrop-filter:blur(16px);
     border-left:1px solid rgba(198,168,124,.25);
     transform:translateX(100%);transition:transform .35s ease;
+    z-index:56;
   }
   .nav-links.open{transform:translateX(0);}
   .nav-toggle{display:flex;}
 }
+@media (min-width:861px){
+  .nav-overlay{display:none;}
+}
 @media (max-width:480px){
   .hero-actions{flex-direction:column;align-items:stretch;}
   .btn{justify-content:center;}
+}
+
+/* ---------- PROMO BANNERS ---------- */
+.promo-banners{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1240px;margin:0 auto;padding:40px 20px 0;}
+.promo-card{
+  display:flex;align-items:center;gap:18px;padding:26px;border-radius:14px;position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:transform .25s ease, box-shadow .25s ease;
+  background:linear-gradient(135deg, var(--morado-vivo) 0%, var(--morado-vivo-deep) 100%);
+}
+.promo-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(94,53,104,.4);}
+.promo-card.promo-learn{background:linear-gradient(135deg, var(--morado-vivo-deep) 0%, var(--negro-2) 100%);}
+.promo-mascot{width:74px;height:74px;flex-shrink:0;filter:drop-shadow(0 6px 12px rgba(0,0,0,.3));}
+.promo-mascot svg{width:100%;height:100%;display:block;}
+.promo-text{flex:1;min-width:0;}
+.promo-tag{display:inline-block;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--crema);background:rgba(255,255,255,.16);padding:4px 12px;border-radius:100px;margin-bottom:8px;}
+.promo-text h3{font-family:'Cormorant Garamond', serif;font-weight:600;font-size:1.35rem;color:#fff;line-height:1.2;margin-bottom:6px;}
+.promo-text p{font-size:.78rem;color:rgba(255,255,255,.8);line-height:1.4;margin-bottom:14px;}
+.promo-btn{background:var(--crema);color:var(--negro);padding:10px 22px;font-size:.72rem;border:0;}
+.promo-btn:hover{background:#fff;transform:none;box-shadow:none;}
+
+@media (max-width:760px){
+  .promo-banners{grid-template-columns:1fr;}
+}
+@media (max-width:420px){
+  .promo-card{flex-direction:column;text-align:center;}
 }
 
 /* ---------- FILTER / SEARCH ---------- */
@@ -162,8 +196,6 @@ a{-webkit-tap-highlight-color:transparent;}
 /* ---------- CATALOG ---------- */
 .catalog{max-width:1240px;margin:0 auto;padding:52px 20px 100px;}
 .category-block{margin-bottom:56px;}
-.category-block.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease, transform .7s ease;}
-.category-block.reveal.visible{opacity:1;transform:translateY(0);}
 .category-title{
   font-family:'Cormorant Garamond', serif;
   font-style:italic;
@@ -188,18 +220,17 @@ a{-webkit-tap-highlight-color:transparent;}
   display:flex;
   flex-direction:column;
   cursor:pointer;
-  transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease, opacity .6s ease;
-  opacity:0;transform:translateY(20px);
+  transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
 }
-.card.visible{opacity:1;transform:translateY(0);}
 .card:hover{transform:translateY(-4px);border-color:rgba(198,168,124,.55);box-shadow:0 16px 32px rgba(0,0,0,.35);}
 
 .thumb{aspect-ratio:1/1;background:linear-gradient(135deg, rgba(198,168,124,.08), transparent), var(--malva-profundo);display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(198,168,124,.18);position:relative;overflow:hidden;}
+.thumb::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg, rgba(58,36,64,.1) 0%, transparent 45%, rgba(13,10,14,.38) 100%);box-shadow:inset 0 0 0 1px rgba(198,168,124,.06);}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s ease;}
 .card:hover .thumb img{transform:scale(1.08);}
 .thumb svg{width:38%;height:38%;opacity:.55;stroke:var(--dorado);}
 .badge-sale{position:absolute;top:10px;left:10px;z-index:2;background:var(--dorado);color:var(--negro);font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:100px;box-shadow:0 2px 10px rgba(0,0,0,.4);}
-.combo-collage{display:grid;width:100%;height:100%;gap:2px;}
+.combo-collage{display:grid;width:100%;height:100%;gap:3px;background:var(--negro);}
 .combo-collage img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .55s ease;}
 .card:hover .combo-collage img{transform:scale(1.08);}
 .collage-2{grid-template-columns:1fr 1fr;}
@@ -220,12 +251,12 @@ a{-webkit-tap-highlight-color:transparent;}
 .old-price{display:block;font-family:'Jost', sans-serif;font-size:.72rem;color:rgba(237,227,221,.4);text-decoration:line-through;font-weight:400;}
 .card-actions{display:flex;gap:8px;}
 .wa-btn,.btn-add{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;text-decoration:none;flex-shrink:0;transition:.2s ease;border:0;cursor:pointer;}
-.wa-btn{background:var(--dorado);color:var(--negro);}
-.wa-btn:hover{background:var(--crema);transform:scale(1.08);}
-.wa-btn svg{width:18px;height:18px;}
-.btn-add{background:rgba(198,168,124,.16);color:var(--dorado);border:1px solid rgba(198,168,124,.4);}
-.btn-add:hover{background:var(--dorado);color:var(--negro);transform:scale(1.08);}
+.btn-add{background:var(--dorado);color:var(--negro);}
+.btn-add:hover{background:var(--crema);transform:scale(1.08);}
 .btn-add svg{width:18px;height:18px;}
+.wa-btn{background:rgba(198,168,124,.16);color:var(--dorado);border:1px solid rgba(198,168,124,.4);}
+.wa-btn:hover{background:var(--dorado);color:var(--negro);transform:scale(1.08);}
+.wa-btn svg{width:18px;height:18px;}
 
 .empty-state{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--malva);font-family:'Cormorant Garamond', serif;font-size:1.3rem;font-style:italic;}
 
@@ -325,6 +356,75 @@ a{-webkit-tap-highlight-color:transparent;}
   .product-modal-body{grid-template-columns:1fr;}
   .product-info{padding:20px 24px 28px;}
 }
+@media (max-width:420px){
+  .product-info-actions{flex-direction:column;align-items:stretch;gap:10px;}
+  .qty-stepper{align-self:center;}
+}
+
+/* ---------- QUIZ MODAL ---------- */
+.quiz-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-48%);width:min(94vw,560px);max-height:88vh;overflow-y:auto;background:var(--negro-2);border:1px solid rgba(142,90,168,.35);border-radius:12px;z-index:81;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 30px 80px rgba(0,0,0,.6);}
+.quiz-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%);}
+.quiz-modal .modal-header{background:linear-gradient(135deg, var(--morado-vivo), var(--morado-vivo-deep));border-bottom-color:transparent;}
+.quiz-modal .modal-header h3{color:#fff;}
+.quiz-body{padding:26px 28px 30px;}
+.quiz-mascot{width:96px;height:96px;margin:0 auto 14px;}
+.quiz-mascot svg{width:100%;height:100%;display:block;}
+.quiz-intro{text-align:center;}
+.quiz-intro p{font-size:.88rem;color:rgba(237,227,221,.75);line-height:1.6;margin-bottom:20px;}
+.quiz-progress{display:flex;justify-content:center;gap:6px;margin-bottom:18px;}
+.quiz-progress span{width:22px;height:4px;border-radius:100px;background:rgba(198,168,124,.2);}
+.quiz-progress span.done{background:var(--morado-vivo);}
+.quiz-question{font-family:'Cormorant Garamond', serif;font-style:italic;font-weight:600;font-size:1.3rem;color:var(--crema);text-align:center;margin-bottom:18px;}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.quiz-option{border:1px solid rgba(198,168,124,.25);border-radius:10px;padding:18px 12px;text-align:center;cursor:pointer;transition:.2s ease;background:rgba(255,255,255,.03);}
+.quiz-option:hover{border-color:var(--morado-vivo);background:rgba(142,90,168,.12);}
+.quiz-option-icon{font-size:1.7rem;display:block;margin-bottom:8px;}
+.quiz-option-label{font-size:.8rem;color:var(--crema);}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:22px;}
+.quiz-back{background:none;border:0;color:rgba(237,227,221,.5);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;}
+.quiz-back:hover{color:var(--dorado);}
+.quiz-back:disabled{opacity:0;pointer-events:none;}
+.quiz-results-intro{text-align:center;margin-bottom:16px;}
+.quiz-results-intro h4{font-family:'Cormorant Garamond', serif;font-weight:600;font-size:1.2rem;color:var(--dorado);margin-bottom:4px;}
+.quiz-results-intro p{font-size:.8rem;color:rgba(237,227,221,.65);}
+.quiz-results-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.quiz-result-card{border:1px solid rgba(198,168,124,.18);border-radius:8px;overflow:hidden;background:linear-gradient(180deg, rgba(125,91,130,.14), rgba(58,36,64,.22));cursor:pointer;}
+.quiz-result-thumb{aspect-ratio:1/1;position:relative;overflow:hidden;background:var(--malva-profundo);}
+.quiz-result-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.quiz-result-thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(58,36,64,.1) 0%, transparent 45%, rgba(13,10,14,.38) 100%);}
+.quiz-result-body{padding:10px 12px 12px;}
+.quiz-result-name{font-size:.78rem;color:var(--crema);line-height:1.3;margin-bottom:6px;min-height:2.6em;}
+.quiz-result-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.quiz-result-price{font-family:'Cormorant Garamond', serif;color:var(--dorado);font-weight:600;font-size:.95rem;}
+.quiz-restart{display:block;margin:20px auto 0;background:none;border:0;color:var(--morado-vivo);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;text-decoration:underline;}
+
+@media (max-width:480px){
+  .quiz-options{grid-template-columns:1fr;}
+  .quiz-results-grid{grid-template-columns:1fr 1fr;}
+}
+
+/* ---------- LEARN MODAL ---------- */
+.learn-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-48%);width:min(94vw,600px);max-height:88vh;overflow-y:auto;background:var(--negro-2);border:1px solid rgba(142,90,168,.35);border-radius:12px;z-index:81;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;box-shadow:0 30px 80px rgba(0,0,0,.6);}
+.learn-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%);}
+.learn-modal .modal-header{background:linear-gradient(135deg, var(--morado-vivo-deep), var(--negro-2));border-bottom-color:rgba(142,90,168,.3);}
+.learn-modal .modal-header h3{color:#fff;}
+.learn-body{padding:22px 26px 30px;}
+.learn-intro{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.learn-intro .quiz-mascot{width:56px;height:56px;margin:0;flex-shrink:0;}
+.learn-intro p{font-size:.8rem;color:rgba(237,227,221,.7);line-height:1.5;}
+.learn-filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;scrollbar-width:none;}
+.learn-filters::-webkit-scrollbar{display:none;}
+.learn-article{border:1px solid rgba(198,168,124,.18);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+.learn-article-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;cursor:pointer;background:rgba(255,255,255,.03);}
+.learn-article-title{flex:1;min-width:0;}
+.learn-article-tag{display:block;font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--morado-vivo);margin-bottom:4px;}
+.learn-article-header h4{font-family:'Cormorant Garamond', serif;font-weight:600;font-size:1rem;color:var(--crema);line-height:1.3;}
+.learn-article-chevron{flex-shrink:0;transition:transform .3s ease;color:var(--dorado);}
+.learn-article-chevron svg{width:16px;height:16px;display:block;}
+.learn-article.open .learn-article-chevron{transform:rotate(180deg);}
+.learn-article-body{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+.learn-article.open .learn-article-body{max-height:700px;}
+.learn-article-body p{font-size:.83rem;color:rgba(237,227,221,.72);line-height:1.65;padding:0 18px 16px;}
 
 /* ---------- TOAST ---------- */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dorado);color:var(--negro);padding:12px 24px;border-radius:100px;font-size:.8rem;font-weight:500;letter-spacing:.03em;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:90;opacity:0;pointer-events:none;transition:opacity .3s ease, transform .3s ease;max-width:90vw;text-align:center;}
@@ -373,6 +473,7 @@ a{-webkit-tap-highlight-color:transparent;}
     <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
+    <div class="nav-overlay" id="navOverlay"></div>
     <div class="nav-links" id="navLinks">
       <a href="#top">Inicio</a>
       <a href="#catalogo">Catálogo</a>
@@ -406,6 +507,49 @@ a{-webkit-tap-highlight-color:transparent;}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9l6 6 6-6"/></svg>
   </a>
 </header>
+
+<section class="promo-banners">
+  <div class="promo-card promo-quiz" id="openQuizBtn" role="button" tabindex="0">
+    <div class="promo-mascot">
+      <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="72" cy="200" rx="20" ry="13" fill="#A8875C"/>
+        <ellipse cx="128" cy="200" rx="20" ry="13" fill="#A8875C"/>
+        <path d="M100 8C55 8 32 55 32 98c0 55 15 100 68 104 53-4 68-49 68-104C168 55 145 8 100 8Z" fill="#C6A87C"/>
+        <circle cx="76" cy="92" r="6" fill="#241626"/>
+        <circle cx="124" cy="92" r="6" fill="#241626"/>
+        <ellipse cx="58" cy="108" rx="9" ry="5.5" fill="#E9A9B7" opacity=".55"/>
+        <ellipse cx="142" cy="108" rx="9" ry="5.5" fill="#E9A9B7" opacity=".55"/>
+        <path d="M88 106q12 10 24 0" stroke="#241626" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="promo-text">
+      <span class="promo-tag">¿No sabes qué elegir?</span>
+      <h3>Descubre tu juguete ideal</h3>
+      <p>Responde 4 preguntas rápidas y te recomendamos justo lo que buscas.</p>
+      <button class="btn promo-btn" type="button">Hacer el test</button>
+    </div>
+  </div>
+  <div class="promo-card promo-learn" id="openLearnBtn" role="button" tabindex="0">
+    <div class="promo-mascot">
+      <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="72" cy="200" rx="20" ry="13" fill="#7D5B82"/>
+        <ellipse cx="128" cy="200" rx="20" ry="13" fill="#7D5B82"/>
+        <path d="M100 8C55 8 32 55 32 98c0 55 15 100 68 104 53-4 68-49 68-104C168 55 145 8 100 8Z" fill="#EDE3DD"/>
+        <circle cx="76" cy="92" r="6" fill="#241626"/>
+        <circle cx="124" cy="92" r="6" fill="#241626"/>
+        <ellipse cx="58" cy="108" rx="9" ry="5.5" fill="#E9A9B7" opacity=".55"/>
+        <ellipse cx="142" cy="108" rx="9" ry="5.5" fill="#E9A9B7" opacity=".55"/>
+        <path d="M88 106q12 10 24 0" stroke="#241626" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="promo-text">
+      <span class="promo-tag">Sin tabúes</span>
+      <h3>Aprende sobre sexualidad</h3>
+      <p>Guías cortas y claras para explorar con confianza e información real.</p>
+      <button class="btn promo-btn" type="button">Ver guías</button>
+    </div>
+  </div>
+</section>
 
 <section class="filter-wrap" id="catalogo">
   <div class="search-box">
@@ -531,6 +675,24 @@ a{-webkit-tap-highlight-color:transparent;}
       <a class="btn btn-outline product-wa-btn" id="productWaBtn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a8.94 8.94 0 0 0-7.75 13.4L3 21l3.7-1.24a8.87 8.87 0 0 0 4.35 1.12h.02a8.94 8.94 0 0 0 6.53-15zM12.06 19.4a7.4 7.4 0 0 1-3.77-1.04l-.27-.16-2.8.94.75-2.73-.18-.28a7.44 7.44 0 1 1 13.8-3.9 7.4 7.4 0 0 1-7.53 7.17zm4.08-5.56c-.22-.11-1.32-.65-1.52-.73-.2-.07-.35-.11-.5.11-.15.22-.57.73-.7.88-.13.15-.26.16-.48.05-.22-.11-.94-.35-1.79-1.11-.66-.6-1.11-1.33-1.24-1.55-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.37.07-.15.04-.28-.02-.39-.07-.11-.5-1.21-.68-1.66-.18-.43-.36-.37-.5-.38h-.43c-.15 0-.39.05-.6.28-.2.22-.79.77-.79 1.87s.81 2.16.92 2.31c.11.15 1.6 2.44 3.87 3.42.54.23.96.37 1.29.48.54.17 1.03.15 1.42.09.43-.06 1.32-.54 1.51-1.06.19-.52.19-.96.13-1.06-.06-.1-.2-.15-.42-.26z"/></svg> Consultar por WhatsApp</a>
     </div>
   </div>
+</div>
+
+<div class="modal-overlay" id="quizOverlay"></div>
+<div class="quiz-modal" id="quizModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-header">
+    <h3>¿Qué te conviene?</h3>
+    <button class="drawer-close" id="quizClose" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="quiz-body" id="quizBody"></div>
+</div>
+
+<div class="modal-overlay" id="learnOverlay"></div>
+<div class="learn-modal" id="learnModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-header">
+    <h3>Aprende sobre sexualidad</h3>
+    <button class="drawer-close" id="learnClose" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="learn-body" id="learnBody"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -716,28 +878,21 @@ fabTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smoo
 
 const navToggle = document.getElementById("navToggle");
 const navLinks = document.getElementById("navLinks");
+const navOverlay = document.getElementById("navOverlay");
+function closeNav() {
+  navLinks.classList.remove("open");
+  navOverlay.classList.remove("open");
+  navToggle.classList.remove("open");
+  navToggle.setAttribute("aria-expanded", false);
+}
 navToggle.addEventListener("click", () => {
   const open = navLinks.classList.toggle("open");
+  navOverlay.classList.toggle("open", open);
   navToggle.classList.toggle("open", open);
   navToggle.setAttribute("aria-expanded", open);
 });
-navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
-  navLinks.classList.remove("open");
-  navToggle.classList.remove("open");
-  navToggle.setAttribute("aria-expanded", false);
-}));
-
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("visible");
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12 });
-function observeReveal() {
-  document.querySelectorAll(".reveal:not(.visible), .card:not(.visible)").forEach(el => revealObserver.observe(el));
-}
+navOverlay.addEventListener("click", closeNav);
+navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", closeNav));
 
 const categories = [...new Set(products.map(p => p.cat))];
 const money = n => "$" + n.toLocaleString("es-CO");
@@ -795,7 +950,7 @@ function render(filter) {
     if (!items.length) return;
     shown += items.length;
     const block = document.createElement("section");
-    block.className = "category-block reveal";
+    block.className = "category-block";
     block.innerHTML = `<h2 class="category-title">${cat}</h2><div class="grid"></div>`;
     const grid = block.querySelector(".grid");
     items.forEach(p => {
@@ -832,7 +987,6 @@ function render(filter) {
   if (!shown) {
     catalog.innerHTML = `<p class="empty-state">No encontramos productos que coincidan con tu búsqueda.</p>`;
   }
-  observeReveal();
 }
 
 filterBar.addEventListener("click", e => {
@@ -1084,8 +1238,227 @@ goCheckout.addEventListener("click", openCheckout);
 checkoutClose.addEventListener("click", closeCheckout);
 checkoutOverlay.addEventListener("click", closeCheckout);
 
+function mascotSVG(body, foot, blush) {
+  return `<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="72" cy="200" rx="20" ry="13" fill="${foot}"/>
+    <ellipse cx="128" cy="200" rx="20" ry="13" fill="${foot}"/>
+    <path d="M100 8C55 8 32 55 32 98c0 55 15 100 68 104 53-4 68-49 68-104C168 55 145 8 100 8Z" fill="${body}"/>
+    <circle cx="76" cy="92" r="6" fill="#241626"/>
+    <circle cx="124" cy="92" r="6" fill="#241626"/>
+    <ellipse cx="58" cy="108" rx="9" ry="5.5" fill="#E9A9B7" opacity=".55"/>
+    <ellipse cx="142" cy="108" rx="9" ry="5.5" fill="#E9A9B7" opacity=".55"/>
+    <path d="M88 106q12 10 24 0" stroke="#241626" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </svg>`;
+}
+const MASCOT_PURPLE = mascotSVG("#C6A87C", "#A8875C", "#E9A9B7");
+const MASCOT_CREAM = mascotSVG("#EDE3DD", "#7D5B82", "#E9A9B7");
+
+const QUIZ_QUESTIONS = [
+  { key: "who", question: "¿Para quién es?", options: [
+    { label: "Para mí sola/o", icon: "🙋" },
+    { label: "En pareja", icon: "💞" }
+  ]},
+  { key: "interest", question: "¿Qué te llama más la atención?", options: [
+    { label: "Vibración y estimulación", icon: "✨" },
+    { label: "Formas realistas", icon: "🌙" },
+    { label: "Juegos y accesorios", icon: "🎭" },
+    { label: "Lencería y seducción", icon: "💜" },
+    { label: "Cuidado íntimo", icon: "🧴" }
+  ]},
+  { key: "experiencia", question: "¿Cuál es tu experiencia con juguetes?", options: [
+    { label: "Es mi primera vez", icon: "🌱" },
+    { label: "Ya he usado juguetes antes", icon: "🔥" }
+  ]},
+  { key: "destacar", question: "¿Qué buscas destacar?", options: [
+    { label: "Discreción y suavidad", icon: "🤍" },
+    { label: "Intensidad y potencia", icon: "⚡" },
+    { label: "Complicidad en pareja", icon: "💞" },
+    { label: "Un regalo especial", icon: "🎁" }
+  ]}
+];
+const QUIZ_CATEGORY_MAP = {
+  "Vibración y estimulación": ["Vibradores", "Potenciadores"],
+  "Formas realistas": ["Dildos", "Masturbadores"],
+  "Juegos y accesorios": ["Plugs Anales", "Bondage y Accesorios"],
+  "Lencería y seducción": ["Lencería"],
+  "Cuidado íntimo": ["Lubricantes Íntimos", "Saborizados y Placer Oral", "Masajes"]
+};
+
+function getQuizResults(answers) {
+  let pool;
+  if (answers.destacar === "Un regalo especial") {
+    pool = products.filter(p => p.cat === "Combos");
+  } else {
+    const cats = QUIZ_CATEGORY_MAP[answers.interest] || [];
+    pool = products.filter(p => cats.includes(p.cat));
+  }
+  if (!pool.length) pool = products.filter(p => p.cat !== "Combos");
+  const sorted = answers.experiencia === "Es mi primera vez"
+    ? [...pool].sort((a, b) => a.price - b.price)
+    : [...pool].sort((a, b) => b.price - a.price);
+  const seen = new Set();
+  const results = [];
+  for (const p of sorted) {
+    if (seen.has(p.sku)) continue;
+    seen.add(p.sku);
+    results.push(p);
+    if (results.length === 4) break;
+  }
+  return results;
+}
+
+const quizOverlay = document.getElementById("quizOverlay");
+const quizModal = document.getElementById("quizModal");
+const quizClose = document.getElementById("quizClose");
+const quizBody = document.getElementById("quizBody");
+let quizStep = 0;
+let quizAnswers = {};
+
+function renderQuiz() {
+  const total = QUIZ_QUESTIONS.length;
+  if (quizStep === 0) {
+    quizBody.innerHTML = `
+      <div class="quiz-intro">
+        <div class="quiz-mascot">${MASCOT_PURPLE}</div>
+        <p>¡Hola! Responde ${total} preguntas rápidas y te ayudo a encontrar justo lo que buscas.</p>
+        <button class="btn btn-primary" type="button" id="quizStartBtn">Empezar</button>
+      </div>`;
+    return;
+  }
+  if (quizStep >= 1 && quizStep <= total) {
+    const q = QUIZ_QUESTIONS[quizStep - 1];
+    const dots = QUIZ_QUESTIONS.map((_, i) => `<span class="${i < quizStep ? "done" : ""}"></span>`).join("");
+    quizBody.innerHTML = `
+      <div class="quiz-progress">${dots}</div>
+      <div class="quiz-question">${q.question}</div>
+      <div class="quiz-options">
+        ${q.options.map(o => `<div class="quiz-option" data-key="${q.key}" data-value="${o.label}"><span class="quiz-option-icon">${o.icon}</span><span class="quiz-option-label">${o.label}</span></div>`).join("")}
+      </div>
+      <div class="quiz-nav">
+        <button class="quiz-back" type="button" ${quizStep === 1 ? "disabled" : ""}>Atrás</button>
+      </div>`;
+    return;
+  }
+  const results = getQuizResults(quizAnswers);
+  quizBody.innerHTML = `
+    <div class="quiz-results-intro">
+      <div class="quiz-mascot" style="width:64px;height:64px;">${MASCOT_PURPLE}</div>
+      <h4>Esto es para ti</h4>
+      <p>Según tus respuestas, estos productos te pueden encantar.</p>
+    </div>
+    <div class="quiz-results-grid">
+      ${results.map(p => `
+        <div class="quiz-result-card" data-sku="${p.sku}">
+          <div class="quiz-result-thumb"><img src="${p.link || (p.items && p.items[0] && p.items[0].link) || ""}" alt="${p.name}" loading="lazy"></div>
+          <div class="quiz-result-body">
+            <div class="quiz-result-name">${p.name}</div>
+            <div class="quiz-result-footer">
+              <span class="quiz-result-price">${money(p.price)}</span>
+              <button class="btn-add" type="button" data-add-sku="${p.sku}" aria-label="Agregar al carrito">${cartIcon}</button>
+            </div>
+          </div>
+        </div>`).join("")}
+    </div>
+    <button class="quiz-restart" type="button" id="quizRestartBtn">Repetir el test</button>`;
+}
+
+quizBody.addEventListener("click", e => {
+  const addBtn = e.target.closest("[data-add-sku]");
+  if (addBtn) { addToCart(addBtn.dataset.addSku); return; }
+  if (e.target.closest("#quizStartBtn")) { quizStep = 1; renderQuiz(); return; }
+  if (e.target.closest("#quizRestartBtn")) { quizStep = 0; quizAnswers = {}; renderQuiz(); return; }
+  const backBtn = e.target.closest(".quiz-back");
+  if (backBtn && !backBtn.disabled) { quizStep--; renderQuiz(); return; }
+  const option = e.target.closest(".quiz-option");
+  if (option) { quizAnswers[option.dataset.key] = option.dataset.value; quizStep++; renderQuiz(); return; }
+  const resultCard = e.target.closest(".quiz-result-card");
+  if (resultCard) { closeQuiz(); openProductModal(resultCard.dataset.sku); }
+});
+
+function openQuiz() {
+  quizStep = 0;
+  quizAnswers = {};
+  renderQuiz();
+  quizModal.classList.add("open");
+  quizOverlay.classList.add("open");
+  quizModal.setAttribute("aria-hidden", "false");
+}
+function closeQuiz() {
+  quizModal.classList.remove("open");
+  quizOverlay.classList.remove("open");
+  quizModal.setAttribute("aria-hidden", "true");
+}
+const openQuizBtn = document.getElementById("openQuizBtn");
+openQuizBtn.addEventListener("click", openQuiz);
+openQuizBtn.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openQuiz(); } });
+quizClose.addEventListener("click", closeQuiz);
+quizOverlay.addEventListener("click", closeQuiz);
+
+const LEARN_ARTICLES = [
+  { cat: "Primeros pasos", title: "Cómo elegir tu primer juguete", body: "No existe una única forma correcta de empezar. Si es tu primera vez, elige algo simple: un vibrador pequeño de estimulación externa suele ser el punto de partida más cómodo porque no requiere penetración y es fácil de controlar. Pregúntate qué te da curiosidad —vibración, presión, textura— y parte de ahí. Prioriza siempre materiales body-safe como silicona médica, y recuerda que ir despacio y explorar sin presión también es parte de la experiencia." },
+  { cat: "Cuidado íntimo", title: "Lubricante: la guía rápida que te ahorra errores", body: "El lubricante a base de agua es el más seguro y versátil: es compatible con preservativos de látex y con casi todos los juguetes, incluidos los de silicona. El de silicona dura más y es ideal para el agua, pero no debe usarse con juguetes de silicona porque puede dañar el material con el tiempo. Evita los lubricantes a base de aceite si vas a usar condones de látex, ya que pueden romperlos. Si tienes piel sensible, prueba una pequeña cantidad antes de usarlo por completo." },
+  { cat: "Cuidado íntimo", title: "Cómo cuidar e higienizar tus juguetes", body: "Limpia tus juguetes antes y después de cada uso con agua tibia y jabón neutro, o con un limpiador especializado. Revisa el material: la silicona pura resiste bien el agua y limpiadores suaves, mientras que los materiales tipo ABS o TPE solo deben limpiarse por fuera, sin sumergirlos. Guárdalos secos y por separado, idealmente en una bolsa individual, para evitar que distintos materiales se degraden entre sí. Si vas a compartir un juguete, usa un preservativo como barrera." },
+  { cat: "Pareja", title: "Cómo hablar con tu pareja sobre nuevas experiencias", body: "El mejor momento para hablar de fantasías o de incorporar algo nuevo no es en pleno encuentro, sino en un momento tranquilo, sin prisa. Empieza por lo que ya disfrutan juntos antes de proponer algo nuevo, y plantea la idea desde la curiosidad, no como una exigencia. Acordar una palabra o gesto para pausar en cualquier momento ayuda a que ambos se sientan seguros para explorar. Si algo no se siente bien, está perfectamente bien parar o cambiar de plan." },
+  { cat: "Bienestar", title: "Consentimiento: la base de todo", body: "El consentimiento no es un trámite de una sola vez: es una conversación continua que puede cambiar en cualquier momento, incluso a mitad de un encuentro. Preguntar '¿estás bien?' o '¿quieres seguir?' no interrumpe el momento, lo hace más seguro y también más placentero para ambas personas. Esto aplica sin importar cuánto tiempo lleven juntos. Un sí entusiasta es siempre mejor que la simple ausencia de un no." },
+  { cat: "Bienestar", title: "Mitos comunes sobre el placer que puedes dejar atrás", body: "Usar juguetes no reemplaza a una pareja ni indica que algo 'falta' en la relación: es simplemente otra forma de explorar el placer, y tampoco generan dependencia física. Otro mito frecuente es pensar que el placer femenino depende solo de la penetración, cuando el clítoris suele ser protagonista en la mayoría de los casos. Y no existe una frecuencia 'normal' de deseo: lo válido es lo que funcione para ti y, si aplica, para tu pareja." }
+];
+
+const learnOverlay = document.getElementById("learnOverlay");
+const learnModal = document.getElementById("learnModal");
+const learnClose = document.getElementById("learnClose");
+const learnBody = document.getElementById("learnBody");
+let learnFilter = "Todos";
+
+function renderLearn() {
+  const cats = ["Todos", ...new Set(LEARN_ARTICLES.map(a => a.cat))];
+  const filtered = learnFilter === "Todos" ? LEARN_ARTICLES : LEARN_ARTICLES.filter(a => a.cat === learnFilter);
+  learnBody.innerHTML = `
+    <div class="learn-intro">
+      <div class="quiz-mascot">${MASCOT_CREAM}</div>
+      <p>Información clara y sin tabúes para explorar con confianza. Toca una guía para leerla.</p>
+    </div>
+    <div class="learn-filters">
+      ${cats.map(c => `<button type="button" class="chip${c === learnFilter ? " active" : ""}" data-learn-filter="${c}">${c}</button>`).join("")}
+    </div>
+    <div class="learn-articles">
+      ${filtered.map(a => `
+        <div class="learn-article">
+          <div class="learn-article-header">
+            <div class="learn-article-title"><span class="learn-article-tag">${a.cat}</span><h4>${a.title}</h4></div>
+            <span class="learn-article-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+          <div class="learn-article-body"><p>${a.body}</p></div>
+        </div>`).join("")}
+    </div>`;
+}
+
+learnBody.addEventListener("click", e => {
+  const filterBtn = e.target.closest("[data-learn-filter]");
+  if (filterBtn) { learnFilter = filterBtn.dataset.learnFilter; renderLearn(); return; }
+  const header = e.target.closest(".learn-article-header");
+  if (header) { header.closest(".learn-article").classList.toggle("open"); }
+});
+
+function openLearn() {
+  learnFilter = "Todos";
+  renderLearn();
+  learnModal.classList.add("open");
+  learnOverlay.classList.add("open");
+  learnModal.setAttribute("aria-hidden", "false");
+}
+function closeLearn() {
+  learnModal.classList.remove("open");
+  learnOverlay.classList.remove("open");
+  learnModal.setAttribute("aria-hidden", "true");
+}
+const openLearnBtn = document.getElementById("openLearnBtn");
+openLearnBtn.addEventListener("click", openLearn);
+openLearnBtn.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLearn(); } });
+learnClose.addEventListener("click", closeLearn);
+learnOverlay.addEventListener("click", closeLearn);
+
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") { closeCart(); closeCheckout(); closeProductModal(); }
+  if (e.key === "Escape") { closeCart(); closeCheckout(); closeProductModal(); closeNav(); closeQuiz(); closeLearn(); }
 });
 
 const paymentOptionsEl = document.getElementById("paymentOptions");
