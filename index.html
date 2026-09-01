@@ -1545,47 +1545,100 @@ function mascotSVG(body, foot, blush) {
 const MASCOT_PURPLE = mascotSVG("#C6A87C", "#A8875C", "#E9A9B7");
 const MASCOT_CREAM = mascotSVG("#EDE3DD", "#7D5B82", "#E9A9B7");
 
-const QUIZ_QUESTIONS = [
-  { key: "who", question: "¿Para quién es?", options: [
-    { label: "Para mí sola/o", icon: "🙋" },
-    { label: "En pareja", icon: "💞" }
+const QUIZ_TEXT = {
+  anatomy: { question: "¿Eres una persona con...?", options: [
+    { value: "vagina", label: "Vagina", icon: "🌸" },
+    { value: "pene", label: "Pene", icon: "💧" },
+    { value: "no_decir", label: "Prefiero no decirlo", icon: "🤍" }
   ]},
-  { key: "interest", question: "¿Qué te llama más la atención?", options: [
-    { label: "Vibración y estimulación", icon: "✨" },
-    { label: "Formas realistas", icon: "🌙" },
-    { label: "Juegos y accesorios", icon: "🎭" },
-    { label: "Lencería y seducción", icon: "💜" },
-    { label: "Cuidado íntimo", icon: "🧴" }
+  who: { question: "¿Para quién es?", options: [
+    { value: "sola", label: "Para mí sola/o", icon: "🙋" },
+    { value: "pareja", label: "En pareja", icon: "💞" }
   ]},
-  { key: "experiencia", question: "¿Cuál es tu experiencia con juguetes?", options: [
-    { label: "Es mi primera vez", icon: "🌱" },
-    { label: "Ya he usado juguetes antes", icon: "🔥" }
+  partner: { question: "¿Tu pareja tiene...?", options: [
+    { value: "vagina", label: "Vagina", icon: "🌸" },
+    { value: "pene", label: "Pene", icon: "💧" },
+    { value: "no_decir", label: "Prefiero no decirlo", icon: "🤍" }
   ]},
-  { key: "destacar", question: "¿Qué buscas destacar?", options: [
-    { label: "Discreción y suavidad", icon: "🤍" },
-    { label: "Intensidad y potencia", icon: "⚡" },
-    { label: "Complicidad en pareja", icon: "💞" },
-    { label: "Un regalo especial", icon: "🎁" }
+  previous: { question: "¿Cuál es tu experiencia con juguetes?", options: [
+    { value: "primera", label: "Es mi primera vez", icon: "🌱" },
+    { value: "experimentada", label: "Ya he usado juguetes antes", icon: "🔥" }
   ]}
-];
-const QUIZ_CATEGORY_MAP = {
-  "Vibración y estimulación": ["Vibradores", "Potenciadores"],
-  "Formas realistas": ["Dildos", "Masturbadores"],
-  "Juegos y accesorios": ["Plugs Anales", "Bondage y Accesorios"],
-  "Lencería y seducción": ["Lencería"],
-  "Cuidado íntimo": ["Lubricantes Íntimos", "Saborizados y Placer Oral", "Masajes"]
 };
 
-function getQuizResults(answers) {
-  let pool;
-  if (answers.destacar === "Un regalo especial") {
-    pool = products.filter(p => p.cat === "Combos");
-  } else {
-    const cats = QUIZ_CATEGORY_MAP[answers.interest] || [];
-    pool = products.filter(p => cats.includes(p.cat));
+const QUIZ_EXPERIENCE_OPTIONS = {
+  solo_vagina: [
+    { value: "externa", label: "Estimulación externa", icon: "✨", cats: ["Vibradores"] },
+    { value: "penetracion", label: "Penetración", icon: "🌙", cats: ["Dildos"] },
+    { value: "cuidado", label: "Cuidado íntimo", icon: "🧴", cats: ["Lubricantes Íntimos", "Saborizados y Placer Oral"] },
+    { value: "seduccion", label: "Sentirte irresistible", icon: "💜", cats: ["Lencería"] }
+  ],
+  solo_pene: [
+    { value: "realista", label: "Sensación realista", icon: "🌙", cats: ["Masturbadores"] },
+    { value: "resistencia", label: "Más resistencia", icon: "⚡", cats: ["Potenciadores"] },
+    { value: "anal", label: "Estimulación anal", icon: "🎭", cats: ["Plugs Anales"] },
+    { value: "cuidado", label: "Cuidado íntimo", icon: "🧴", cats: ["Lubricantes Íntimos"] }
+  ],
+  solo_neutral: [
+    { value: "vibracion", label: "Vibración y estimulación", icon: "✨", cats: ["Vibradores", "Potenciadores"] },
+    { value: "formas", label: "Formas realistas", icon: "🌙", cats: ["Dildos", "Masturbadores"] },
+    { value: "juegos", label: "Juegos y accesorios", icon: "🎭", cats: ["Plugs Anales", "Bondage y Accesorios"] },
+    { value: "cuidado", label: "Cuidado íntimo", icon: "🧴", cats: ["Lubricantes Íntimos", "Saborizados y Placer Oral"] }
+  ],
+  pareja_hetero: [
+    { value: "temperatura", label: "Subir la temperatura", icon: "🔥", cats: ["Masajes", "Saborizados y Placer Oral"] },
+    { value: "compartir", label: "Juguetes para compartir", icon: "💞", cats: ["Vibradores"] },
+    { value: "lenceria", label: "Sorprender con lencería", icon: "💜", cats: ["Lencería"] },
+    { value: "anal", label: "Explorar el punto anal", icon: "🎭", cats: ["Plugs Anales"] }
+  ],
+  pareja_vv: [
+    { value: "ambas", label: "Juguetes para ambas", icon: "💞", cats: ["Dildos", "Vibradores"] },
+    { value: "lenceria", label: "Sorprender con lencería", icon: "💜", cats: ["Lencería"] },
+    { value: "masajes", label: "Masajes en pareja", icon: "🔥", cats: ["Masajes"] },
+    { value: "anal", label: "Explorar el punto anal", icon: "🎭", cats: ["Plugs Anales"] }
+  ],
+  pareja_pp: [
+    { value: "ambos", label: "Juguetes para ambos", icon: "💞", cats: ["Plugs Anales", "Dildos"] },
+    { value: "resistencia", label: "Más resistencia", icon: "⚡", cats: ["Potenciadores"] },
+    { value: "masajes", label: "Masajes en pareja", icon: "🔥", cats: ["Masajes"] },
+    { value: "intenso", label: "Nos gusta lo intenso", icon: "🖤", cats: ["Bondage y Accesorios"] }
+  ],
+  pareja_neutral: [
+    { value: "temperatura", label: "Subir la temperatura", icon: "🔥", cats: ["Masajes"] },
+    { value: "compartir", label: "Juguetes para compartir", icon: "💞", cats: ["Vibradores"] },
+    { value: "regalo", label: "Un regalo especial", icon: "🎁", cats: ["Combos"] },
+    { value: "nuevo", label: "Explorar algo nuevo", icon: "🎭", cats: ["Plugs Anales", "Bondage y Accesorios"] }
+  ]
+};
+
+function quizFlow() {
+  const flow = ["anatomy", "who"];
+  if (quizAnswers.who === "pareja" && quizAnswers.anatomy && quizAnswers.anatomy !== "no_decir") {
+    flow.push("partner");
   }
+  flow.push("experience", "previous");
+  return flow;
+}
+
+function getComboKey() {
+  const { anatomy, who, partner } = quizAnswers;
+  if (who === "sola") {
+    if (anatomy === "vagina") return "solo_vagina";
+    if (anatomy === "pene") return "solo_pene";
+    return "solo_neutral";
+  }
+  if (!partner || anatomy === "no_decir" || partner === "no_decir") return "pareja_neutral";
+  if (anatomy === partner) return anatomy === "vagina" ? "pareja_vv" : "pareja_pp";
+  return "pareja_hetero";
+}
+
+function getQuizResults() {
+  const comboOptions = QUIZ_EXPERIENCE_OPTIONS[getComboKey()] || QUIZ_EXPERIENCE_OPTIONS.solo_neutral;
+  const chosen = comboOptions.find(o => o.value === quizAnswers.experience);
+  const cats = chosen ? chosen.cats : [];
+  let pool = products.filter(p => cats.includes(p.cat));
   if (!pool.length) pool = products.filter(p => p.cat !== "Combos");
-  const sorted = answers.experiencia === "Es mi primera vez"
+  const sorted = quizAnswers.previous === "primera"
     ? [...pool].sort((a, b) => a.price - b.price)
     : [...pool].sort((a, b) => b.price - a.price);
   const seen = new Set();
@@ -1607,31 +1660,40 @@ let quizStep = 0;
 let quizAnswers = {};
 
 function renderQuiz() {
-  const total = QUIZ_QUESTIONS.length;
+  const flow = quizFlow();
+  const total = flow.length;
   if (quizStep === 0) {
     quizBody.innerHTML = `
       <div class="quiz-intro">
         <div class="quiz-mascot">${MASCOT_PURPLE}</div>
-        <p>¡Hola! Responde ${total} preguntas rápidas y te ayudo a encontrar justo lo que buscas.</p>
+        <p>¡Hola! Responde unas preguntas rápidas y te recomiendo justo lo que buscas, a tu medida.</p>
         <button class="btn btn-primary" type="button" id="quizStartBtn">Empezar</button>
       </div>`;
     return;
   }
   if (quizStep >= 1 && quizStep <= total) {
-    const q = QUIZ_QUESTIONS[quizStep - 1];
-    const dots = QUIZ_QUESTIONS.map((_, i) => `<span class="${i < quizStep ? "done" : ""}"></span>`).join("");
+    const stepName = flow[quizStep - 1];
+    let questionText, options;
+    if (stepName === "experience") {
+      questionText = "¿Qué experiencia buscas?";
+      options = QUIZ_EXPERIENCE_OPTIONS[getComboKey()] || QUIZ_EXPERIENCE_OPTIONS.solo_neutral;
+    } else {
+      questionText = QUIZ_TEXT[stepName].question;
+      options = QUIZ_TEXT[stepName].options;
+    }
+    const dots = flow.map((_, i) => `<span class="${i < quizStep ? "done" : ""}"></span>`).join("");
     quizBody.innerHTML = `
       <div class="quiz-progress">${dots}</div>
-      <div class="quiz-question">${q.question}</div>
+      <div class="quiz-question">${questionText}</div>
       <div class="quiz-options">
-        ${q.options.map(o => `<div class="quiz-option" data-key="${q.key}" data-value="${o.label}"><span class="quiz-option-icon">${o.icon}</span><span class="quiz-option-label">${o.label}</span></div>`).join("")}
+        ${options.map(o => `<div class="quiz-option" data-step="${stepName}" data-value="${o.value}"><span class="quiz-option-icon">${o.icon}</span><span class="quiz-option-label">${o.label}</span></div>`).join("")}
       </div>
       <div class="quiz-nav">
         <button class="quiz-back" type="button" ${quizStep === 1 ? "disabled" : ""}>Atrás</button>
       </div>`;
     return;
   }
-  const results = getQuizResults(quizAnswers);
+  const results = getQuizResults();
   quizBody.innerHTML = `
     <div class="quiz-results-intro">
       <div class="quiz-mascot" style="width:64px;height:64px;">${MASCOT_PURPLE}</div>
@@ -1662,7 +1724,7 @@ quizBody.addEventListener("click", e => {
   const backBtn = e.target.closest(".quiz-back");
   if (backBtn && !backBtn.disabled) { quizStep--; renderQuiz(); return; }
   const option = e.target.closest(".quiz-option");
-  if (option) { quizAnswers[option.dataset.key] = option.dataset.value; quizStep++; renderQuiz(); return; }
+  if (option) { quizAnswers[option.dataset.step] = option.dataset.value; quizStep++; renderQuiz(); return; }
   const resultCard = e.target.closest(".quiz-result-card");
   if (resultCard) { closeQuiz(); openProductModal(resultCard.dataset.sku); }
 });
