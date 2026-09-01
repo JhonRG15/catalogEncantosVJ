@@ -555,6 +555,7 @@ a{-webkit-tap-highlight-color:transparent;}
   *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important;}
 }
 </style>
+<script src="https://checkout.wompi.co/widget.js"></script>
 </head>
 <body>
 
@@ -1060,11 +1061,84 @@ const products = [
   {cat:"Lencería", name:"Set Bad Girl", sku:"LN-ST-BGRL-001", size:"Talla M, S", price:65000, link:"https://i.ibb.co/GfD1v0jy/Whats-App-Image-2026-08-17-at-11-36-34-PM-2.jpg", description:"Set atrevido de encaje con diseño llamativo, para quienes buscan un look más intenso."},
 ];
 
+// --- Integración de pagos en línea (Wompi) ---
+// Llave pública de Wompi (segura para usar en el navegador).
+const WOMPI_PUBLIC_KEY = "pub_prod_b6AIzlHTOrXARiAN6b0dtLAYpDVf2Se5";
+// URL de tu Cloudflare Worker que firma la transacción (ver guía "wompi-worker.js").
+// Mientras diga "REEMPLAZAR", el pago con tarjeta queda desactivado automáticamente.
+const WOMPI_SIGNATURE_URL = "REEMPLAZAR_CON_TU_URL_DE_WORKER";
+const WOMPI_READY = WOMPI_SIGNATURE_URL.startsWith("http");
+
 const PAYMENT_METHODS = [
   { id: "transferencia", label: "Transferencia Nequi / Bancolombia", detail: "Te compartimos los datos para transferir por WhatsApp.", type: "manual" },
   { id: "contraentrega", label: "Pago contraentrega (efectivo)", detail: "Pagas en efectivo cuando recibes tu pedido.", type: "manual" },
-  { id: "tarjeta", label: "Tarjeta en línea", detail: "Muy pronto podrás pagar con tarjeta directamente aquí.", type: "gateway", disabled: true }
+  { id: "tarjeta", label: "Tarjeta / PSE / Nequi en línea", detail: "Pago seguro con Wompi.", type: "gateway", disabled: !WOMPI_READY }
 ];
+
+async function payWithWompi({ name, phone, address, city, neighborhood, note }) {
+  const reference = "EVJ-" + Date.now();
+  const amountInCents = Math.round(cartTotal() * 100);
+  let signature;
+  try {
+    const res = await fetch(WOMPI_SIGNATURE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reference, amountInCents, currency: "COP" })
+    });
+    if (!res.ok) throw new Error("bad response");
+    ({ signature } = await res.json());
+  } catch (err) {
+    showToast("No se pudo iniciar el pago. Intenta de nuevo o elige otro método.");
+    return;
+  }
+
+  const checkoutWidget = new WidgetCheckout({
+    currency: "COP",
+    amountInCents,
+    reference,
+    publicKey: WOMPI_PUBLIC_KEY,
+    signature: { integrity: signature },
+    redirectUrl: window.location.href,
+    customerData: { fullName: name, phoneNumber: phone }
+  });
+
+  checkoutWidget.open(result => {
+    const tx = result && result.transaction;
+    if (!tx || tx.status !== "APPROVED") {
+      showToast(tx && tx.status === "DECLINED" ? "El pago fue rechazado. Intenta de nuevo." : "Pago no completado.");
+      return;
+    }
+
+    const lines = [];
+    lines.push("🛍️ *Nuevo pedido pagado - Encantos VJ*");
+    lines.push("");
+    lines.push(`*Cliente:* ${name}`);
+    lines.push(`*Teléfono:* ${phone}`);
+    lines.push(`*Dirección:* ${address}${neighborhood ? ", " + neighborhood : ""}`);
+    lines.push(`*Ciudad:* ${city}`);
+    lines.push(`*Método de pago:* Tarjeta/PSE en línea (Wompi) — ✅ pagado`);
+    lines.push(`*Referencia:* ${reference}`);
+    if (note) lines.push(`*Nota:* ${note}`);
+    lines.push("");
+    lines.push("*Productos:*");
+    cart.forEach((i, idx) => {
+      const p = findProduct(i.sku);
+      if (!p) return;
+      lines.push(`${idx + 1}. ${p.name}${p.size ? " (" + p.size + ")" : ""} x${i.qty} — ${money(p.price * i.qty)}`);
+      if (p.items) lines.push(`   Incluye: ${p.items.map(it => it.name).join(", ")}`);
+    });
+    lines.push("");
+    lines.push(`*Total pagado: ${money(cartTotal())}*`);
+
+    const text = encodeURIComponent(lines.join("\n"));
+    window.open(`https://wa.me/${WHATSAPP}?text=${text}`, "_blank");
+
+    clearCart();
+    closeCheckout();
+    checkoutForm.reset();
+    showToast("¡Pago exitoso! Revisa WhatsApp para confirmar el envío.");
+  });
+}
 
 const HERO_IMAGES = [
   "https://distrisexcolombia.com/wp-content/uploads/2025/09/Piel-Sensible-2.jpg",
@@ -1839,6 +1913,11 @@ checkoutForm.addEventListener("submit", e => {
   const note = document.getElementById("ckNote").value.trim();
   const methodInput = checkoutForm.querySelector('input[name="paymentMethod"]:checked');
   const method = PAYMENT_METHODS.find(m => m.id === (methodInput && methodInput.value));
+
+  if (method && method.type === "gateway") {
+    payWithWompi({ name, phone, address, city, neighborhood, note });
+    return;
+  }
 
   const lines = [];
   lines.push("🛍️ *Nuevo pedido - Encantos VJ*");
